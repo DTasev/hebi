@@ -1,6 +1,8 @@
-from voluptuous import Schema, Required, Optional, All, Any, Length, Number, Extra
+from voluptuous import Schema, Required, Optional, All, Any, Length, Extra, ALLOW_EXTRA
 
 _string = Any(str, unicode)
+
+_bool = Any(bool, unicode)
 
 _non_empty_string = All(_string, Length(min=1))
 
@@ -24,6 +26,7 @@ _parameter_full.update({
     Optional('type'): _non_empty_string,
     Required('is_user'): bool,
     Required('is_hidden'): bool,
+    Required('value'): Any()
 })
 
 _plugin_basic = {
@@ -62,8 +65,6 @@ server_configuration_schema = Schema({
     }
 })
 
-query_plugin_list_schema = Schema([_non_empty_string])
-
 get_plugin_info_schema = Schema({
     Required('name'): _non_empty_string,
     Required('info'): _string,
@@ -72,6 +73,12 @@ get_plugin_info_schema = Schema({
     Required('citation'): [_citation],
     Required('parameters'): [_parameter_full],
 })
+
+query_plugin_list_with_details_schema = Schema({
+    Required(_non_empty_string): get_plugin_info_schema
+}, extra=ALLOW_EXTRA)
+
+query_plugin_list_schema = Schema([_non_empty_string], extra=ALLOW_EXTRA)
 
 filename_listing_schema = Schema({
     Required('path'): _non_empty_string,
