@@ -16,13 +16,13 @@ from each version of the Savu image that is desired.
 ### Plugin
 
 - List all plugins  
-  `GET /api/plugin`
+  `GET /api/plugins`
 
 - Search plugins by name  
-  `GET /api/plugin?q=tomo`
+  `GET /api/plugins?q=tomo`
 
 - List plugin details  
-  `GET /api/plugin/TomopyRecon`
+  `GET /api/plugins/TomopyRecon`
 
 ### Process list
 

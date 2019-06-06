@@ -15,6 +15,7 @@ KEY_PROCESS_LIST_FILE = 'process_list'
 KEY_PLUGINS = 'plugins'
 KEY_QUERY = 'q'
 KEY_QUEUE_ID = 'queue'
+KEY_DETAILS = 'details'
 
 WS_NAMESPACE_JOB_STATUS = '/job_status'
 

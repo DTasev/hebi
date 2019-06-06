@@ -1,13 +1,13 @@
 function getAvailablePlugins(callback, error) {
-  jsonGet("/api/plugin", callback, error);
+  jsonGet("/api/plugins", callback, error);
 }
 
 function searchAvailablePlugins(query, callback, error) {
-  jsonGet("/api/plugin?q=" + query, callback, error);
+  jsonGet("/api/plugins?q=" + query, callback, error);
 }
 
 function getPluginDetails(pluginName, callback, error) {
-  jsonGet("/api/plugin/" + pluginName, callback, error);
+  jsonGet("/api/plugins/" + pluginName, callback, error);
 }
 
 function getAvailableProcessLists(searchPath, callback, error) {

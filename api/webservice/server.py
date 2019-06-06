@@ -1,26 +1,25 @@
-import glob
 import os
 import os.path
 
-from flask import (Flask, jsonify, request, abort, make_response, send_file)
+import json_tricks
+import savu.plugins.utils as pu
+import voluptuous
+from flask import (Flask, jsonify, request, abort, send_file)
 from flask.json import JSONEncoder
 from flask_api import status
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit, join_room, leave_room
+from flask_socketio import SocketIO, join_room, leave_room
 from fuzzywuzzy import fuzz
-import json_tricks
-import voluptuous
-
-import savu.plugins.utils as pu
 from scripts.config_generator.content import Content
 
+import const
+import urls
+import validation
+from execution import NoSuchJobError
 from utils import (plugin_to_dict, plugin_list_entry_to_dict,
                    is_file_a_data_file, is_file_a_process_list, validate_file,
-                   to_bool, create_process_list_from_user_data,
+                   create_process_list_from_user_data,
                    find_files_recursive)
-from execution import NoSuchJobError
-import const
-import validation
 
 
 class BetterJsonEncoder(JSONEncoder):
@@ -37,7 +36,7 @@ CORS(app)
 def setup_runners():
     import importlib
     for queue_name, runner in app.config[const.CONFIG_NAMESPACE_SAVU][
-            const.CONFIG_KEY_JOB_RUNNERS].iteritems():
+        const.CONFIG_KEY_JOB_RUNNERS].iteritems():
         # Create an instance of the job runner
         m = importlib.import_module(runner[const.CONFIG_KEY_RUNNER_MODULE])
         c = getattr(m, runner[const.CONFIG_KEY_RUNNER_CLASS])
@@ -59,8 +58,7 @@ def setup_runners():
 
 
 def teardown_runners():
-    for _, v in app.config[const.CONFIG_NAMESPACE_SAVU][
-            const.CONFIG_KEY_JOB_RUNNERS]:
+    for _, v in app.config[const.CONFIG_NAMESPACE_SAVU][const.CONFIG_KEY_JOB_RUNNERS]:
         v[const.CONFIG_KEY_RUNNER_INSTANCE].close()
 
 
@@ -69,34 +67,57 @@ def validate_config():
         app.config[const.CONFIG_NAMESPACE_SAVU])
 
 
-@app.route('/plugin')
+@app.route(urls.PLUGINS)
 def query_plugin_list():
     query = request.args.get(const.KEY_QUERY)
 
+    append_details = request.args.get(const.KEY_DETAILS, default=False)
+
     if query:
         query = query.lower()
-        plugin_names = [k for k, v in pu.plugins.iteritems() \
+        plugin_names = [k for k, v in pu.plugins.iteritems()
                         if fuzz.partial_ratio(k.lower(), query) > 75]
     else:
-        plugin_names = [k for k, v in pu.plugins.iteritems()]
+        if append_details:
+            plugin_names = {}
+            for k, v in pu.plugins.viewitems():
+                plugin_names[k] = _get_plugin_info(k)
 
-    validation.query_plugin_list_schema(plugin_names)
+            validation.query_plugin_list_with_details_schema(plugin_names)
+        else:
+            plugin_names = [k for k, v in pu.plugins.iteritems()]
+            validation.query_plugin_list_schema(plugin_names)
+
     return jsonify(plugin_names)
 
 
-@app.route('/plugin/<name>')
+@app.route('{}/<name>'.format(urls.PLUGINS))
 def get_plugin_info(name):
+    """
+    Returns the plugin info in JSON
+    :param name:
+    :return:
+    """
     if name not in pu.plugins:
         abort(status.HTTP_404_NOT_FOUND)
 
-    # Create plugin instance with default parameter values
-    p = pu.plugins[name]()
-    p._populate_default_parameters()
-
-    data = plugin_to_dict(name, p)
+    data = _get_plugin_info(name)
 
     validation.get_plugin_info_schema(data)
     return jsonify(data)
+
+
+def _get_plugin_info(name):
+    """
+    Returns the plugin info as a Dict
+    :param name:
+    :return:
+    """
+    # Create plugin instance with default parameter values
+    p = pu.plugins[name]()
+    p._populate_default_parameters()
+    data = plugin_to_dict(name, p)
+    return data
 
 
 @app.route('/process_list')
@@ -256,8 +277,8 @@ def jobs_queue_submit(queue):
     # Start job
     job = app.config[const.CONFIG_NAMESPACE_SAVU][
         const.CONFIG_KEY_JOB_RUNNERS][queue][
-            const.CONFIG_KEY_RUNNER_INSTANCE].start_job(dataset, process_list,
-                                                        output)
+        const.CONFIG_KEY_RUNNER_INSTANCE].start_job(dataset, process_list,
+                                                    output)
 
     return jobs_queue_info(queue, job)
 

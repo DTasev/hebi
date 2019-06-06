@@ -1,7 +1,8 @@
-import unittest
 import json
+import unittest
 
 import server
+import urls
 from utils import populate_plugins
 
 
@@ -24,25 +25,32 @@ class ServerTest(unittest.TestCase):
             },
         }
 
-    def test_get_plugin(self):
-        rv = self.app.get('/plugin')
+    def test_get_plugins(self):
+        rv = self.app.get(urls.PLUGINS)
         data = json.loads(rv.data)
 
         self.assertTrue(isinstance(data, list))
         self.assertGreater(len(data), 0)
 
+    def test_get_plugins_with_details(self):
+        rv = self.app.get("{}?details=true".format(urls.PLUGINS))
+        data = json.loads(rv.data)
+
+        self.assertTrue(isinstance(data, dict))
+        self.assertGreater(len(data.keys()), 0)
+
     def test_get_plugin_info_no_citation(self):
-        rv = self.app.get('/plugin/Dezinger')
+        rv = self.app.get('{}/Dezinger'.format(urls.PLUGINS))
         data = json.loads(rv.data)
         self.assertEqual(len(data['citation']), 0)
 
     def test_get_plugin_info_1_citation(self):
-        rv = self.app.get('/plugin/TomopyRecon')
+        rv = self.app.get('{}/TomopyRecon'.format(urls.PLUGINS))
         data = json.loads(rv.data)
         self.assertEqual(len(data['citation']), 1)
 
     def test_get_plugin_info_multiple_citation(self):
-        rv = self.app.get('/plugin/AstraReconGpu')
+        rv = self.app.get('{}/AstraReconGpu'.format(urls.PLUGINS))
         data = json.loads(rv.data)
         self.assertEqual(len(data['citation']), 3)
 
