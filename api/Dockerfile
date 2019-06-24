@@ -6,8 +6,10 @@ ADD requirements.txt \
 RUN /miniconda/bin/pip install -r /requirements.txt && \
     rm /requirements.txt
 
+RUN /miniconda/bin/pip install pydevd
+
 # Add Python application
-ADD . /webservice
+#ADD . /webservice
 
 # Copy API application configuration
 ADD ./config/dls.json \
