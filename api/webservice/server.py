@@ -2,21 +2,19 @@ import os
 import os.path
 
 import json_tricks
-import savu.plugins.utils as pu
 import voluptuous
-from flask import (Flask, jsonify, request, abort, send_file)
+from flask import Flask, jsonify, request, abort, send_file
 from flask.json import JSONEncoder
 from flask_api import status
 from flask_cors import CORS
 from flask_socketio import SocketIO, join_room, leave_room
-from fuzzywuzzy import fuzz
 from scripts.config_generator.content import Content
 
 import const
-import urls
 import validation
+from apps import plugins, run
 from execution import NoSuchJobError
-from utils import (plugin_to_dict, plugin_list_entry_to_dict,
+from utils import (plugin_list_entry_to_dict,
                    is_file_a_data_file, is_file_a_process_list, validate_file,
                    create_process_list_from_user_data,
                    find_files_recursive)
@@ -32,6 +30,9 @@ app.json_encoder = BetterJsonEncoder
 socketio = SocketIO(app)
 CORS(app)
 
+plugins.register(app)
+run.register(app)
+
 
 def setup_runners():
     import importlib
@@ -45,7 +46,7 @@ def setup_runners():
 
         def send_updates_thread_fun(qn, runner):
             """
-            Function which loops forever and periodically sneds out job stattus updates
+            Function which loops forever and periodically sends out job status updates
             TODO: check if the job status has actually changed before sending an update
             """
             while True:
@@ -65,59 +66,6 @@ def teardown_runners():
 def validate_config():
     validation.server_configuration_schema(
         app.config[const.CONFIG_NAMESPACE_SAVU])
-
-
-@app.route(urls.PLUGINS)
-def query_plugin_list():
-    query = request.args.get(const.KEY_QUERY)
-
-    append_details = request.args.get(const.KEY_DETAILS, default=False)
-
-    if query:
-        query = query.lower()
-        plugin_names = [k for k, v in pu.plugins.iteritems()
-                        if fuzz.partial_ratio(k.lower(), query) > 75]
-    else:
-        if append_details:
-            plugin_names = {}
-            for k, v in pu.plugins.viewitems():
-                plugin_names[k] = _get_plugin_info(k)
-
-            validation.query_plugin_list_with_details_schema(plugin_names)
-        else:
-            plugin_names = [k for k, v in pu.plugins.iteritems()]
-            validation.query_plugin_list_schema(plugin_names)
-
-    return jsonify(plugin_names)
-
-
-@app.route('{}/<name>'.format(urls.PLUGINS))
-def get_plugin_info(name):
-    """
-    Returns the plugin info in JSON
-    :param name:
-    :return:
-    """
-    if name not in pu.plugins:
-        abort(status.HTTP_404_NOT_FOUND)
-
-    data = _get_plugin_info(name)
-
-    validation.get_plugin_info_schema(data)
-    return jsonify(data)
-
-
-def _get_plugin_info(name):
-    """
-    Returns the plugin info as a Dict
-    :param name:
-    :return:
-    """
-    # Create plugin instance with default parameter values
-    p = pu.plugins[name]()
-    p._populate_default_parameters()
-    data = plugin_to_dict(name, p)
-    return data
 
 
 @app.route('/process_list')

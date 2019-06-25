@@ -1,4 +1,6 @@
-from voluptuous import Schema, Required, Optional, All, Any, Length, Extra, ALLOW_EXTRA
+from voluptuous import Schema, Required, All, Any, Length, Extra
+
+from webservice.apps.common.validation import citation, parameter_basic, parameter_full
 
 _string = Any(str, unicode)
 
@@ -8,31 +10,10 @@ _non_empty_string = All(_string, Length(min=1))
 
 _parameter_value = _string
 
-_citation = {
-    Required('bibtex'): _string,
-    Required('description'): _string,
-    Required('endnote'): _string,
-    Required('doi'): _string,
-}
-
-_parameter_basic = {
-    Required('name'): _non_empty_string,
-    Required('value'): _parameter_value,
-}
-
-_parameter_full = _parameter_basic.copy()
-_parameter_full.update({
-    Required('description'): _non_empty_string,
-    Optional('type'): _non_empty_string,
-    Required('is_user'): bool,
-    Required('is_hidden'): bool,
-    Required('value'): Any()
-})
-
 _plugin_basic = {
     Required('name'): _non_empty_string,
     Required('active'): bool,
-    Required('parameters'): [_parameter_basic],
+    Required('parameters'): [parameter_basic],
 }
 
 _plugin_full = {
@@ -41,9 +22,9 @@ _plugin_full = {
     Required('info'): _string,
     Required('synopsis'): _string,
     Required('warn'): _string,
-    Required('citation'): [_citation],
+    Required('citation'): [citation],
     Required('id'): _non_empty_string,
-    Required('parameters'): [_parameter_full],
+    Required('parameters'): [parameter_full],
 }
 
 server_configuration_schema = Schema({
@@ -64,21 +45,6 @@ server_configuration_schema = Schema({
         }
     }
 })
-
-get_plugin_info_schema = Schema({
-    Required('name'): _non_empty_string,
-    Required('info'): _string,
-    Required('synopsis'): _string,
-    Required('warn'): _string,
-    Required('citation'): [_citation],
-    Required('parameters'): [_parameter_full],
-})
-
-query_plugin_list_with_details_schema = Schema({
-    Required(_non_empty_string): get_plugin_info_schema
-}, extra=ALLOW_EXTRA)
-
-query_plugin_list_schema = Schema([_non_empty_string], extra=ALLOW_EXTRA)
 
 filename_listing_schema = Schema({
     Required('path'): _non_empty_string,
