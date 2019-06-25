@@ -5,20 +5,9 @@ CONFIG_KEY_RUNNER_MODULE = 'module'
 CONFIG_KEY_RUNNER_CLASS = 'class'
 CONFIG_KEY_RUNNER_PARAMETERS = 'parameters'
 
-KEY_DATASET = 'dataset'
-KEY_FILENAME = 'filename'
-KEY_FILES = 'files'
-KEY_OUTPUT_PATH = 'output'
-KEY_PATH = 'path'
-KEY_JOB_ID = 'job'
-KEY_PROCESS_LIST_FILE = 'process_list'
-KEY_PLUGINS = 'plugins'
-KEY_QUEUE_ID = 'queue'
-
-
 WS_NAMESPACE_JOB_STATUS = '/job_status'
 
 EVENT_JOB_STATUS = 'status'
 
-PLUGIN_ENABLED = 'ON'
-PLUGIN_DISABLED = 'OFF'
+KEY_JOB_ID = 'job'
+KEY_QUEUE_ID = 'queue'

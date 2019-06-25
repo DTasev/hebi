@@ -3,10 +3,10 @@ from flask import jsonify, request, abort
 from flask_api import status
 from fuzzywuzzy import fuzz
 
+from webservice.apps.process_list.utils import plugin_to_dict
 from webservice.apps.plugins import urlparams
 from webservice.apps.plugins import urls
 from webservice.apps.plugins import validation
-from webservice.utils import plugin_to_dict
 
 
 def register(app):
