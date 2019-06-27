@@ -55,8 +55,7 @@ def teardown_runners():
 
 
 def validate_config():
-    validation.server_configuration_schema(
-        app.config[const.CONFIG_NAMESPACE_SAVU])
+    validation.server_configuration_schema(app.config[const.CONFIG_NAMESPACE_SAVU])
 
 
 @app.route('/default_paths')
