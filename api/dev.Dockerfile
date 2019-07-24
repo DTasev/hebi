@@ -1,16 +1,16 @@
 FROM dannixon/savu:latest
 
+ARG SAVU_REVISION=master
+
 # Install additional Python dependencies
-ADD requirements.txt \
-    /requirements.txt
+COPY requirements.txt dev.requirements.txt /
 
 # Install project requirements, AND install pydevd - for remote debugging with PyCharm
-RUN /miniconda/bin/pip install -r /requirements.txt && \
-    rm /requirements.txt && /miniconda/bin/pip install pydevd
+RUN /miniconda/bin/pip install -r /requirements.txt -r /dev.requirements.txt && \
+    rm /dev.requirements.txt /requirements.txt
 
 # Copy API application configuration
-ADD ./config/dls.json \
-    /hebi_config.json
+ADD ./config/dls.json /hebi_config.json
 
 # Expose API port
 EXPOSE 5000
