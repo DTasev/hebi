@@ -1,7 +1,14 @@
 all: build run
 
-build:
+build-master:
 	sudo docker build -t hebi -f Dockerfile .
+
+build-dev:
+	# This installs the dependencies in a docker image
+	# the source needs to be mounted manually at container:/webservice,
+    # and savu needs to be mounted at container:/savu_custom
+	sudo docker build -t hebi-dev -f dev.Dockerfile .
+
 run:
 	docker run --network=host \
 	    -v ~/dev/hebi/api:/webservice \

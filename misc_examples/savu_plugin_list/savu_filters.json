@@ -1,0 +1,5166 @@
+{
+  "AstraReconCpu": {
+    "citation": [
+      {
+        "bibtex": "@article{van2016fast,\ntitle={Fast and flexible X-ray tomography using the ASTRA              toolbox},\nauthor={van Aarle, Wim and Palenstijn, Willem Jan and Cant,              Jeroen and Janssens, Eline and Bleichrodt, Folkert and              Dabravolski, Andrei and De Beenhouwer, Jan and Batenburg, K Joost             and Sijbers, Jan},\njournal={Optics Express},\nvolume={24},\nnumber={22},\npages={25129--25147},\nyear={2016},\npublisher={Optical Society of America}\n}",
+        "description": "The tomography reconstruction algorithm used in this processing              pipeline is part of the ASTRA Toolbox",
+        "doi": "doi: 10.1364/OE.24.025129",
+        "endnote": "%0 Journal Article\n%T Fast and flexible X-ray tomography using the ASTRA              toolbox\n%A van Aarle, Wim\n%A Palenstijn, Willem Jan\n%A Cant, Jeroen\n%A Janssens, Eline\n%A Bleichrodt, Folkert\n%A Dabravolski, Andrei\n%A De Beenhouwer, Jan\n%A Batenburg, K Joost\n%A Sijbers, Jan\n%J Optics Express\n%V 24\n%N 22\n%P 25129-25147\n%@ 1094-4087\n%D 2016\n%I Optical Society of America\n"
+      },
+      {
+        "bibtex": "@article{van2015astra,\ntitle={The ASTRA Toolbox: A platform for advanced algorithm              development in electron tomography},\nauthor={van Aarle, Wim and Palenstijn, Willem Jan and              De Beenhouwer, Jan and Altantzis, Thomas and Bals, Sara and              Batenburg, K Joost and Sijbers, Jan},\njournal={Ultramicroscopy},\nvolume={157},\npages={35--47},\nyear={2015},\npublisher={Elsevier}\n}",
+        "description": "The tomography reconstruction algorithm used in this processing              pipeline is part of the ASTRA Toolbox",
+        "doi": "doi: 10.1364/OE.24.025129",
+        "endnote": "%0 Journal Article\n%T Numerical removal of ring artifacts in microtomography\n%A Raven, Carsten\n%J Review of scientific instruments\n%V 69\n%N 8\n%P 2978-2980\n%@ 0034-6748\n%D 1998\n%I AIP Publishing"
+      }
+    ],
+    "info": "A Plugin to run the astra reconstruction.",
+    "name": "AstraReconCpu",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Dataset to use as volume initialiser (doesn't currently work with preview).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "init_vol",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Ratio of the masks diameter in pixels to the smallest edge size along given axis.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ratio",
+        "type": "float",
+        "value": "0.95"
+      },
+      {
+        "description": "Take the log of the data before reconstruction (True or False).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "log",
+        "type": "bool",
+        "value": "True"
+      },
+      {
+        "description": "Reconstruction type (FBP|SIRT|SART|ART|CGLS|FP|BP|).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "algorithm",
+        "type": "str",
+        "value": "FBP"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Pad the sinogram to centre it in order to fill the reconstructed volume ROI for asthetic purposes. NB: Only available for selected algorithms and will be ignored otherwise. WARNING: This will significantly increase the size of the data and the time to compute the reconstruction).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "centre_pad",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Pad the sinogram width to fill the reconstructed volume for asthetic purposes. Choose from True (defaults to sqrt(2)), False or float <= 2.1. NB: Only available for selected algorithms and will be ignored otherwise. WARNING: This will increase the size of the data and the time to compute the reconstruction).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "outer_pad",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Override the default log function.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "log_func",
+        "type": "str",
+        "value": "np.nan_to_num(-np.log(sino))"
+      },
+      {
+        "description": "Number of Iterations - only valid for iterative algorithms.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "n_iterations",
+        "type": "int",
+        "value": "1"
+      },
+      {
+        "description": "Set any values in the reconstructed image outside of this range to zero.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "force_zero",
+        "type": "list",
+        "value": "[None, None]"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Centre of rotation to use for the reconstruction.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "centre_of_rotation",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "Set astra projector (line|strip|linear).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "projector",
+        "type": "str",
+        "value": "line"
+      }
+    ],
+    "synopsis": "Wrapper around the Astra toolbox for cpu reconstruction.",
+    "warn": ""
+  },
+  "AstraReconGpu": {
+    "citation": [
+      {
+        "bibtex": "@article{van2016fast,\ntitle={Fast and flexible X-ray tomography using the ASTRA              toolbox},\nauthor={van Aarle, Wim and Palenstijn, Willem Jan and Cant,              Jeroen and Janssens, Eline and Bleichrodt, Folkert and              Dabravolski, Andrei and De Beenhouwer, Jan and Batenburg, K Joost             and Sijbers, Jan},\njournal={Optics Express},\nvolume={24},\nnumber={22},\npages={25129--25147},\nyear={2016},\npublisher={Optical Society of America}\n}",
+        "description": "The tomography reconstruction algorithm used in this processing              pipeline is part of the ASTRA Toolbox",
+        "doi": "doi: 10.1364/OE.24.025129",
+        "endnote": "%0 Journal Article\n%T Fast and flexible X-ray tomography using the ASTRA              toolbox\n%A van Aarle, Wim\n%A Palenstijn, Willem Jan\n%A Cant, Jeroen\n%A Janssens, Eline\n%A Bleichrodt, Folkert\n%A Dabravolski, Andrei\n%A De Beenhouwer, Jan\n%A Batenburg, K Joost\n%A Sijbers, Jan\n%J Optics Express\n%V 24\n%N 22\n%P 25129-25147\n%@ 1094-4087\n%D 2016\n%I Optical Society of America\n"
+      },
+      {
+        "bibtex": "@article{van2015astra,\ntitle={The ASTRA Toolbox: A platform for advanced algorithm              development in electron tomography},\nauthor={van Aarle, Wim and Palenstijn, Willem Jan and              De Beenhouwer, Jan and Altantzis, Thomas and Bals, Sara and              Batenburg, K Joost and Sijbers, Jan},\njournal={Ultramicroscopy},\nvolume={157},\npages={35--47},\nyear={2015},\npublisher={Elsevier}\n}",
+        "description": "The tomography reconstruction algorithm used in this processing              pipeline is part of the ASTRA Toolbox",
+        "doi": "doi: 10.1364/OE.24.025129",
+        "endnote": "%0 Journal Article\n%T Numerical removal of ring artifacts in microtomography\n%A Raven, Carsten\n%J Review of scientific instruments\n%V 69\n%N 8\n%P 2978-2980\n%@ 0034-6748\n%D 1998\n%I AIP Publishing"
+      },
+      {
+        "bibtex": "@article{palenstijn2011performance,\ntitle={Performance improvements for iterative electron              tomography reconstruction using graphics processing units              (GPUs)},\nauthor={Palenstijn, WJ and Batenburg, KJ and Sijbers, J},\njournal={Journal of structural biology},\nvolume={176},\nnumber={2},\npages={250--253},\nyear={2011},\npublisher={Elsevier}\n}",
+        "description": "The tomography reconstruction algorithm used in this processing              pipeline is part of the ASTRA Toolbox",
+        "doi": "doi: 10.1016/j.jsb.2011.07.017",
+        "endnote": "%0 Journal Article\n%T Performance improvements for iterative electron tomography              reconstruction using graphics processing units (GPUs)\n%A Palenstijn, WJ\n%A Batenburg, KJ\n%A Sijbers, J\n%J Journal of structural biology\n%V 176\n%N 2\n%P 250-253\n%@ 1047-8477\n%D 2011\n%I Elsevier\n"
+      }
+    ],
+    "info": "A Plugin to run the astra reconstruction.",
+    "name": "AstraReconGpu",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Dataset to use as volume initialiser (doesn't currently work with preview).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "init_vol",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Output the residual norm at each iteration (Error in the solution - iterative solvers only).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "res_norm",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Ratio of the masks diameter in pixels to the smallest edge size along given axis.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ratio",
+        "type": "float",
+        "value": "0.95"
+      },
+      {
+        "description": "Take the log of the data before reconstruction (True or False).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "log",
+        "type": "bool",
+        "value": "True"
+      },
+      {
+        "description": "Reconstruction type (FBP_CUDA|SIRT_CUDA| SART_CUDA (not currently working)|CGLS_CUDA|FP_CUDA|BP_CUDA| SIRT3D_CUDA|CGLS3D_CUDA).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "algorithm",
+        "type": "str",
+        "value": "FBP_CUDA"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Pad the sinogram to centre it in order to fill the reconstructed volume ROI for asthetic purposes. NB: Only available for selected algorithms and will be ignored otherwise. WARNING: This will significantly increase the size of the data and the time to compute the reconstruction).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "centre_pad",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Pad the sinogram width to fill the reconstructed volume for asthetic purposes. Choose from True (defaults to sqrt(2)), False or float <= 2.1. NB: Only available for selected algorithms and will be ignored otherwise. WARNING: This will increase the size of the data and the time to compute the reconstruction).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "outer_pad",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Override the default log function.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "log_func",
+        "type": "str",
+        "value": "np.nan_to_num(-np.log(sino))"
+      },
+      {
+        "description": "Number of Iterations - only valid for iterative algorithms.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "n_iterations",
+        "type": "int",
+        "value": "1"
+      },
+      {
+        "description": "Set any values in the reconstructed image outside of this range to zero.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "force_zero",
+        "type": "list",
+        "value": "[None, None]"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Centre of rotation to use for the reconstruction.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "centre_of_rotation",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "The FBP reconstruction filter type (none|ram-lak| shepp-logan|cosine|hamming|hann|tukey|lanczos|triangular|gaussian| barlett-hann|blackman|nuttall|blackman-harris|blackman-nuttall| flat-top|kaiser|parzen).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "FBP_filter",
+        "type": "str",
+        "value": "ram-lak"
+      }
+    ],
+    "synopsis": "Wrapper around the Astra toolbox for gpu reconstruction.",
+    "warn": ""
+  },
+  "BandPass": {
+    "citation": [],
+    "info": "A plugin to filter each frame with a BandPass T.",
+    "name": "BandPass",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Kernel Size.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "blur_width",
+        "type": "tuple",
+        "value": "(0, 3, 3)"
+      },
+      {
+        "description": "filter type (High|Low).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "type",
+        "type": "str",
+        "value": "High"
+      }
+    ],
+    "synopsis": "A plugin to low pass each frame with a gaussian.",
+    "warn": ""
+  },
+  "BasicOperations": {
+    "citation": [],
+    "info": "A class that performs basic mathematical operations on datasets\nHow should the information be passed to the plugin?.",
+    "name": "BasicOperations",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Operations to perform.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "operations",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Pattern associated with the datasets.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "pattern",
+        "type": "str",
+        "value": "PROJECTION"
+      }
+    ],
+    "synopsis": "Plugin to perform basic mathematical operations on datasets.",
+    "warn": ""
+  },
+  "CameraRotCorrection": {
+    "citation": [],
+    "info": "A plugin to apply a rotation to projection images, for example to correct for missing camera alignment.",
+    "name": "CameraRotCorrection",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "This parameter automatically sets the centre of rotation to the centre of the image. If set to False, the values from centre_x and centre_y are used. Note: The centre needs to be within the image dimensions.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "use_auto_centre",
+        "type": "bool",
+        "value": "True"
+      },
+      {
+        "description": "The rotation angle for the output image in degrees.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "angle",
+        "type": "int",
+        "value": "0"
+      },
+      {
+        "description": "If not use_auto_centre, this value determines the detector x coordinate for the centre of rotation.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "centre_y",
+        "type": "float",
+        "value": "1079.5"
+      },
+      {
+        "description": "When a rotation is applied to any image, the result will contain zeros around the edges, which can be removed by cropping the edges by a specified number of pixels.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "crop_edges",
+        "type": "int",
+        "value": "0"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "If not use_auto_centre, this value determines the detector x coordinate for the centre of rotation. The",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "centre_x",
+        "type": "float",
+        "value": "1279.5"
+      },
+      {
+        "description": "If activated, this feature will automatically crop the image to eliminate any regions without data (because of the rotation).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "auto_crop",
+        "type": "bool",
+        "value": "False"
+      }
+    ],
+    "synopsis": "A plugin to apply a rotation to projection images.",
+    "warn": ""
+  },
+  "DarkFlatFieldCorrection": {
+    "citation": [],
+    "info": "A Plugin to apply a simple dark and flat field correction to data.",
+    "name": "DarkFlatFieldCorrection",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Set all values above the upper bound to this value.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "upper_bound",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Set all values below the lower_bound to this value.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "lower_bound",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Data processing pattern is 'PROJECTION' or 'SINOGRAM'.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "pattern",
+        "type": "str",
+        "value": "PROJECTION"
+      },
+      {
+        "description": "Output a warning if this proportion of values, or greater, are below and/or above the lower/upper bounds, e.g enter 0.05 for 5%.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "warn_proportion",
+        "type": "float",
+        "value": "0.05"
+      }
+    ],
+    "synopsis": "A Plugin to apply a simple dark and flatfield correction to raw timeseries data.",
+    "warn": ""
+  },
+  "DataRemoval": {
+    "citation": [],
+    "info": "A class to remove any unwanted data from the specified pattern frame.",
+    "name": "DataRemoval",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Data dimension to reduce.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dim",
+        "type": "int",
+        "value": "0"
+      },
+      {
+        "description": "A list or range of values to remove, e.g. [0, 1, 2], 0:2 (start:stop) or 0:2:1 (start:stop:step).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "indices",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Explicitly state the slicing pattern.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "pattern",
+        "type": "str",
+        "value": "SINOGRAM"
+      }
+    ],
+    "synopsis": "Plugin to remove unwanted data.",
+    "warn": ""
+  },
+  "DenoiseBregmanFilter": {
+    "citation": [],
+    "info": "Split Bregman method for solving the denoising Total Variation ROF model.",
+    "name": "DenoiseBregmanFilter",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Denoising factor.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "weight",
+        "type": "float",
+        "value": "2.0"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Convergence threshold.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "error_threshold",
+        "type": "float",
+        "value": "0.001"
+      },
+      {
+        "description": "Isotropic or Anisotropic filtering.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "isotropic",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Total number of iterations.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "max_iterations",
+        "type": "int",
+        "value": "100"
+      }
+    ],
+    "synopsis": "A plugin to denoise 2D slices of data by using the Split Bregman.",
+    "warn": ""
+  },
+  "Dezinger": {
+    "citation": [],
+    "info": "A plugin for cleaning x-ray strikes based on statistical evaluation of the near neighbourhood.",
+    "name": "Dezinger",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "output mode, 0=normal 5=zinger strength 6=zinger yes/no.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "mode",
+        "type": "int",
+        "value": "0"
+      },
+      {
+        "description": "Number of frames included in average.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "kernel_size",
+        "type": "int",
+        "value": "5"
+      },
+      {
+        "description": "Threshold for defecting outliers, greater is less sensitive.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "outlier_mu",
+        "type": "float",
+        "value": "10.0"
+      }
+    ],
+    "synopsis": "A plugin to remove zingers.",
+    "warn": ""
+  },
+  "DezingerSimple": {
+    "citation": [],
+    "info": "A plugin for cleaning x-ray strikes based on statistical evaluation of the near neighbourhood.",
+    "name": "DezingerSimple",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Number of frames included in average - if the number is not odd use kernel_size+1.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "kernel_size",
+        "type": "int",
+        "value": "5"
+      },
+      {
+        "description": "Threshold for detecting outliers, greater is less sensitive.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "outlier_mu",
+        "type": "float",
+        "value": "1000.0"
+      }
+    ],
+    "synopsis": "A plugin to remove zingers.",
+    "warn": ""
+  },
+  "DezingerSinogram": {
+    "citation": [],
+    "info": "Method to remove scratches in the reconstructed image caused by zingers.",
+    "name": "DezingerSinogram",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Threshold for detecting zingers, greater is less sensitive.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "tolerance",
+        "type": "float",
+        "value": "0.08"
+      }
+    ],
+    "synopsis": "A plugin working in sinogram space to removes zingers.",
+    "warn": ""
+  },
+  "DistortionCorrection": {
+    "citation": [],
+    "info": "A plugin to apply radial distortion correction.",
+    "name": "DistortionCorrection",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The centre of distortion in pixels from the top of the image.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "centre_from_top",
+        "type": "float",
+        "value": "995.24"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "When applied to previewed/cropped data, the result may contain zeros around the edges, which can be removed by cropping the edges by a specified number of pixels.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "crop_edges",
+        "type": "int",
+        "value": "0"
+      },
+      {
+        "description": "Parameters of the radial distortion function.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "polynomial_coeffs",
+        "type": "tuple",
+        "value": "(1.00015076, 1.9289e-06, -2.4325e-08, 1.00439e-11, -3.99352e-15)"
+      },
+      {
+        "description": "The centre of distortion in pixels from the left of the image.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "centre_from_left",
+        "type": "float",
+        "value": "1283.25"
+      }
+    ],
+    "synopsis": "A plugin to apply a distortion correction.",
+    "warn": ""
+  },
+  "DownsampleFilter": {
+    "citation": [],
+    "info": "A plugin to reduce the data in the selected dimension by a proportion.",
+    "name": "DownsampleFilter",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "One of 'PROJECTION' or 'SINOGRAM'.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "pattern",
+        "type": "str",
+        "value": "PROJECTION"
+      },
+      {
+        "description": "One of 'mean', 'median', 'min', 'max'.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "mode",
+        "type": "str",
+        "value": "mean"
+      },
+      {
+        "description": "Bin Size for the downsample.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "bin_size",
+        "type": "int",
+        "value": "2"
+      }
+    ],
+    "synopsis": "A plugin to filter each frame with a downsample.",
+    "warn": ""
+  },
+  "DummyPtycho": {
+    "citation": [],
+    "info": "This plugin performs ptychography using the ptypy package.",
+    "name": "DummyPtycho",
+    "parameters": [
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[probe, object_transmission, positions]"
+      }
+    ],
+    "synopsis": "A plugin to fit peaks.",
+    "warn": ""
+  },
+  "DxchangeLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from a hdf5 file.",
+    "name": "DxchangeLoader",
+    "parameters": [
+      {
+        "description": "flat data path and scale value.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "flat",
+        "type": "list",
+        "value": "[exchange/data_white, 1]"
+      },
+      {
+        "description": "path to the log file.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "logfile",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "tomo"
+      },
+      {
+        "description": "Set to true if this reshape is required.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "3d_to_4d",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Path to the data.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "data_path",
+        "type": "str",
+        "value": "exchange/data"
+      },
+      {
+        "description": "dark data path and scale value.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dark",
+        "type": "list",
+        "value": "[exchange/data_dark, 1]"
+      },
+      {
+        "description": "Hidden.",
+        "is_hidden": true,
+        "is_user": false,
+        "name": "angles",
+        "type": "list",
+        "value": "[1, 2, 3]"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "List of batch numbers of flats (start at 1) to ignore.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ignore_flats",
+        "type": "NoneType",
+        "value": "None"
+      }
+    ],
+    "synopsis": "Load tomography data in dxchange format.",
+    "warn": ""
+  },
+  "EdfSaver": {
+    "citation": [],
+    "info": "A class to save xrf data to edf files.",
+    "name": "EdfSaver",
+    "parameters": [
+      {
+        "description": "The name of the dataset to save.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Hidden, dummy out_datasets entry.",
+        "is_hidden": true,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class to save xrf output in edf format.",
+    "warn": ""
+  },
+  "FindPeaks": {
+    "citation": [],
+    "info": "This plugin uses peakutils to find peaks in spectra. This is then metadata.",
+    "name": "FindPeaks",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[Peaks]"
+      },
+      {
+        "description": "Threshold for peak detection",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "thresh",
+        "type": "float",
+        "value": "0.03"
+      },
+      {
+        "description": "Minimum distance for peak detection.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "min_distance",
+        "type": "int",
+        "value": "15"
+      }
+    ],
+    "synopsis": "A plugin to find the peaks.",
+    "warn": ""
+  },
+  "Hdf5Saver": {
+    "citation": [],
+    "info": "A class to save tomography data to a hdf5 file.",
+    "name": "Hdf5Saver",
+    "parameters": [
+      {
+        "description": "The name of the dataset to save.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Hidden, dummy out_datasets entry.",
+        "is_hidden": true,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Optimise data storage to this access pattern: 'optimum' will automate this process by choosing the output pattern from the previous plugin, if it exists, else the first pattern.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "pattern",
+        "type": "str",
+        "value": "optimum"
+      }
+    ],
+    "synopsis": "A class to save data to a hdf5 output file.",
+    "warn": ""
+  },
+  "Hdf5TemplateLoader": {
+    "citation": [],
+    "info": "A class to load data from a non-standard nexus/hdf5 file using descriptions loaded from a yaml file.",
+    "name": "Hdf5TemplateLoader",
+    "parameters": [
+      {
+        "description": "Path to the file containing the data descriptions.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "yaml_file",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A hidden parameter to hold parameters passed in via a savu template file.",
+        "is_hidden": true,
+        "is_user": false,
+        "name": "template_param",
+        "type": "dict",
+        "value": "{}"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class to load data from a non-standard nexus/hdf5 file using descriptions loaded from a yaml file.",
+    "warn": ""
+  },
+  "Histogram": {
+    "citation": [],
+    "info": "This plugin uses peakutils to find peaks in spectra. This is then metadata.",
+    "name": "Histogram",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "histograms a binary input.",
+    "warn": ""
+  },
+  "I08FluoLoader": {
+    "citation": [],
+    "info": "A class to load i08s xrf data.",
+    "name": "I08FluoLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The mono energy.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "mono_path",
+        "type": "str",
+        "value": "/entry/instrument/PlaneGratingMonochromator/pgm_energy"
+      }
+    ],
+    "synopsis": "A class for loading I08s xrf data.",
+    "warn": ""
+  },
+  "I13FluoLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXstxm file.",
+    "name": "I13FluoLoader",
+    "parameters": [
+      {
+        "description": "fluo scale offset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fluo_offset",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "The theta step.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "theta_step",
+        "type": "float",
+        "value": "1.0"
+      },
+      {
+        "description": "The theta start.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "theta_start",
+        "type": "float",
+        "value": "-90.0"
+      },
+      {
+        "description": "The theta end.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "theta_end",
+        "type": "float",
+        "value": "90.0"
+      },
+      {
+        "description": "The mono energy.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "mono_energy",
+        "type": "float",
+        "value": "11.8"
+      },
+      {
+        "description": "The mono energy.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "is_tomo",
+        "type": "bool",
+        "value": "True"
+      },
+      {
+        "description": "fluo gain.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fluo_gain",
+        "type": "float",
+        "value": "0.01"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading xrf data.",
+    "warn": ""
+  },
+  "I13PtychoLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXstxm file.",
+    "name": "I13PtychoLoader",
+    "parameters": [
+      {
+        "description": "The theta step.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "theta_step",
+        "type": "float",
+        "value": "1.0"
+      },
+      {
+        "description": "The theta start.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "theta_start",
+        "type": "float",
+        "value": "-90.0"
+      },
+      {
+        "description": "The theta end.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "theta_end",
+        "type": "float",
+        "value": "90.0"
+      },
+      {
+        "description": "The mono energy.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "mono_energy",
+        "type": "float",
+        "value": "9.1"
+      },
+      {
+        "description": "The mono energy.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "is_tomo",
+        "type": "bool",
+        "value": "True"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading nxstxm data.",
+    "warn": ""
+  },
+  "I13SpeckleLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXstxm file.",
+    "name": "I13SpeckleLoader",
+    "parameters": [
+      {
+        "description": "Path to the reference.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "angle_key",
+        "type": "str",
+        "value": "/entry/theta"
+      },
+      {
+        "description": "the output sets.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dataset_names",
+        "type": "list",
+        "value": "[signal, reference]"
+      },
+      {
+        "description": "Path to the signals.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "signal_key",
+        "type": "str",
+        "value": "/entry/sample"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Path to the reference.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "reference_key",
+        "type": "str",
+        "value": "/entry/reference"
+      }
+    ],
+    "synopsis": "A class for loading I13's speckle tracking data.",
+    "warn": ""
+  },
+  "I13StxmLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from the txm.",
+    "name": "I13StxmLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading nxstxm data.",
+    "warn": ""
+  },
+  "I13StxmMonitorLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from the txm.",
+    "name": "I13StxmMonitorLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading nxstxm data.",
+    "warn": ""
+  },
+  "I13StxmXrfLoader": {
+    "citation": [],
+    "info": "",
+    "name": "I13StxmXrfLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "is it.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "is_map",
+        "type": "bool",
+        "value": "True"
+      }
+    ],
+    "synopsis": "A class for loading nxstxm data.",
+    "warn": ""
+  },
+  "I14FluoLoader": {
+    "citation": [],
+    "info": "A class to load i14s xrf data.",
+    "name": "I14FluoLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The mono energy.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "mono_path",
+        "type": "str",
+        "value": "/entry/instrument/beamline/DCM/dcm_energy"
+      }
+    ],
+    "synopsis": "A class for loading I14s xrf data.",
+    "warn": ""
+  },
+  "I18FluoLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXstxm file.",
+    "name": "I18FluoLoader",
+    "parameters": [
+      {
+        "description": "what is the fast axis called.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fast_axis",
+        "type": "str",
+        "value": "x"
+      },
+      {
+        "description": "what was the scan.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "scan_pattern",
+        "type": "list",
+        "value": "[rotation, x]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "fluo"
+      },
+      {
+        "description": "path to stxm.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "fluo_detector",
+        "type": "str",
+        "value": "entry1/xspress3/AllElementSum"
+      },
+      {
+        "description": "where is the monochromator.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "monochromator",
+        "type": "str",
+        "value": "entry1/instrument/DCM/energy"
+      },
+      {
+        "description": "where is y in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "y",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "where is x in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "x",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/traj1ContiniousX"
+      },
+      {
+        "description": "where is rotation in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "rotation",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/sc_sample_thetafine"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading I18's stxm data.",
+    "warn": ""
+  },
+  "I18MmLoader": {
+    "citation": [],
+    "info": "This class provides a base for all multi-modal loaders\nA class to load tomography data from an NXstxm file\nA class to load tomography data from an NXstxm file\nA class to load tomography data from an monitor file\nA class to load tomography data from an NXstxm file.",
+    "name": "I18MmLoader",
+    "parameters": [
+      {
+        "description": "path to stxm.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "stxm_detector",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/It"
+      },
+      {
+        "description": "what is the fast axis called.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fast_axis",
+        "type": "str",
+        "value": "x"
+      },
+      {
+        "description": "what was the scan.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "scan_pattern",
+        "type": "list",
+        "value": "[rotation, x]"
+      },
+      {
+        "description": "path to stxm.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "fluo_detector",
+        "type": "str",
+        "value": "entry1/xspress3/AllElementSum"
+      },
+      {
+        "description": "The names assigned to each dataset in the order: fluorescence, diffraction, absorption, monitor.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dataset_names",
+        "type": "list",
+        "value": "[fluo, xrd, stxm, monitor]"
+      },
+      {
+        "description": "Path to the folder containing the data.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "data_path",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "path to the calibration file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "calibration_path",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "where is y in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "y",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "where is the monochromator.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "monochromator",
+        "type": "str",
+        "value": "entry1/instrument/DCM/energy"
+      },
+      {
+        "description": "where is x in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "x",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/traj1ContiniousX"
+      },
+      {
+        "description": "where is rotation in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "rotation",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/sc_sample_thetafine"
+      },
+      {
+        "description": "path to monitor.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "monitor_detector",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/I0"
+      }
+    ],
+    "synopsis": "A class for loading multiple data types in a multi-modal experimental setup.",
+    "warn": ""
+  },
+  "I18MonitorLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an monitor file.",
+    "name": "I18MonitorLoader",
+    "parameters": [
+      {
+        "description": "what is the fast axis called.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fast_axis",
+        "type": "str",
+        "value": "x"
+      },
+      {
+        "description": "what was the scan.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "scan_pattern",
+        "type": "list",
+        "value": "[rotation, x]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "monitor"
+      },
+      {
+        "description": "where is the monochromator.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "monochromator",
+        "type": "str",
+        "value": "entry1/instrument/DCM/energy"
+      },
+      {
+        "description": "path to monitor.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "monitor_detector",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/I0"
+      },
+      {
+        "description": "where is y in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "y",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "where is x in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "x",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/traj1ContiniousX"
+      },
+      {
+        "description": "where is rotation in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "rotation",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/sc_sample_thetafine"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading I18's stxm data.",
+    "warn": ""
+  },
+  "I18StxmLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXstxm file.",
+    "name": "I18StxmLoader",
+    "parameters": [
+      {
+        "description": "path to stxm.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "stxm_detector",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/It"
+      },
+      {
+        "description": "what is the fast axis called.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fast_axis",
+        "type": "str",
+        "value": "x"
+      },
+      {
+        "description": "what was the scan.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "scan_pattern",
+        "type": "list",
+        "value": "[rotation, x]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "stxm"
+      },
+      {
+        "description": "where is the monochromator.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "monochromator",
+        "type": "str",
+        "value": "entry1/instrument/DCM/energy"
+      },
+      {
+        "description": "where is y in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "y",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "where is x in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "x",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/traj1ContiniousX"
+      },
+      {
+        "description": "where is rotation in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "rotation",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/sc_sample_thetafine"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading I18's stxm data.",
+    "warn": ""
+  },
+  "I18XrdLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXstxm file.",
+    "name": "I18XrdLoader",
+    "parameters": [
+      {
+        "description": "what is the fast axis called.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fast_axis",
+        "type": "str",
+        "value": "x"
+      },
+      {
+        "description": "what was the scan.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "scan_pattern",
+        "type": "list",
+        "value": "[rotation, x]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "xrd"
+      },
+      {
+        "description": "where is the monochromator.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "monochromator",
+        "type": "str",
+        "value": "entry1/instrument/DCM/energy"
+      },
+      {
+        "description": "path to the calibration file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "calibration_path",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Path to the folder containing the data.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "data_path",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "where is y in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "y",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "where is x in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "x",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/traj1ContiniousX"
+      },
+      {
+        "description": "where is rotation in the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "rotation",
+        "type": "str",
+        "value": "entry1/raster_counterTimer01/sc_sample_thetafine"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading I18's stxm data.",
+    "warn": ""
+  },
+  "I22TomoLoader": {
+    "citation": [],
+    "info": "A class to load tomography data for I22 that has been previously processed using dawn.",
+    "name": "I22TomoLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading I22.",
+    "warn": ""
+  },
+  "Ica": {
+    "citation": [],
+    "info": "This plugin performs independent component analysis on XRD/XRF spectra.",
+    "name": "Ica",
+    "parameters": [
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[scores, eigenvectors]"
+      },
+      {
+        "description": "The chunk to work on.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "chunk",
+        "type": "str",
+        "value": "SINOGRAM"
+      },
+      {
+        "description": "The state.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "random_state",
+        "type": "int",
+        "value": "1"
+      },
+      {
+        "description": "To subtract the mean or not.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "whiten",
+        "type": "int",
+        "value": "1"
+      },
+      {
+        "description": "The initial mixing matrix.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "w_init",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "The number expected components.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "number_of_components",
+        "type": "int",
+        "value": "3"
+      }
+    ],
+    "synopsis": "A plugin to fit peaks.",
+    "warn": ""
+  },
+  "ImageInterpolation": {
+    "citation": [],
+    "info": "A plugin to interpolate an image by a factor\na wrapper on scipy.misc.imresize.",
+    "name": "ImageInterpolation",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "nearest lanczos bilinear bicubic cubic.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "interp",
+        "type": "str",
+        "value": "bicubic"
+      },
+      {
+        "description": "int, float or tuple.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "size",
+        "type": "float",
+        "value": "2.0"
+      }
+    ],
+    "synopsis": "A plugin to interpolate each frame.",
+    "warn": ""
+  },
+  "ImageLoader": {
+    "citation": [],
+    "info": "Load any FabIO compatible formats (e.g. tiffs).",
+    "name": "ImageLoader",
+    "parameters": [
+      {
+        "description": "A file prefix for the data file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "data_prefix",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A file prefix for the flat field files, including the folder path if different from the data.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "flat_prefix",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A file prefix for the dark field files, including the folder path if different from the data.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dark_prefix",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A python statement to be evaluated (e.g np.linspace(0, 180, nAngles)) or a file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "angles",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Which dimension requires stitching?",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "frame_dim",
+        "type": "int",
+        "value": "0"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dataset_name",
+        "type": "str",
+        "value": "tomo"
+      }
+    ],
+    "synopsis": "A class for loading standard tomography data in a variety of.",
+    "warn": ""
+  },
+  "ImageTemplateLoader": {
+    "citation": [],
+    "info": "A class to load data from a folder of FabIO compatible images using data\ndescriptions loaded from a yaml file.",
+    "name": "ImageTemplateLoader",
+    "parameters": [
+      {
+        "description": "Path to the file containing the data descriptions.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "yaml_file",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A hidden parameter to hold parameters passed in via a savu template file.",
+        "is_hidden": true,
+        "is_user": false,
+        "name": "template_param",
+        "type": "dict",
+        "value": "{}"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class to load data from a folder of Fabio compatible images using data descriptions loaded from a yaml file.",
+    "warn": ""
+  },
+  "ListToProjections": {
+    "citation": [],
+    "info": "Converts a list of points into a 2D projection.",
+    "name": "ListToProjections",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "step size in the interp, None if minimum chosen.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "step_size_x",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "the value to fill with, takes an average if nothing else chose.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fill_value",
+        "type": "str",
+        "value": "mean"
+      },
+      {
+        "description": "step size in the interp, None if minimum chosen.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "step_size_y",
+        "type": "NoneType",
+        "value": "None"
+      }
+    ],
+    "synopsis": "A plugin to crop a spectra.",
+    "warn": ""
+  },
+  "McNearAbsorptionCorrection": {
+    "citation": [],
+    "info": "McNears absorption correction, takes in a normalised absorption sinogram and xrf sinogram stack.",
+    "name": "McNearAbsorptionCorrection",
+    "parameters": [
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[xrf, stxm]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "the compount.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "compound",
+        "type": "str",
+        "value": "Co0.1Re0.01Ti0.05(SiO2)0.84"
+      },
+      {
+        "description": "angle between detectors.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "azimuthal_offset",
+        "type": "float",
+        "value": "-90.0"
+      },
+      {
+        "description": "the density.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "density",
+        "type": "float",
+        "value": "3.5377"
+      }
+    ],
+    "synopsis": "A plugin apply hogans xrf absorption correction using stxm data.",
+    "warn": ""
+  },
+  "MedianFilter": {
+    "citation": [],
+    "info": "A plugin to filter each frame with a 3x3 median filter.",
+    "name": "MedianFilter",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Kernel size for the filter.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "kernel_size",
+        "type": "tuple",
+        "value": "(1, 3, 3)"
+      },
+      {
+        "description": "pattern to apply this to.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "pattern",
+        "type": "str",
+        "value": "PROJECTION"
+      }
+    ],
+    "synopsis": "A plugin to filter each frame with a 3x3 median filter.",
+    "warn": ""
+  },
+  "MmLoader": {
+    "citation": [],
+    "info": "This class provides a base for all multi-modal loaders\nA class to load tomography data from an NXxrd file\nA class to load tomography data from an NXstxm file\nA class to load tomography data from an NXmonitor file\nA class to load tomography data from an NXFluo file.",
+    "name": "MmLoader",
+    "parameters": [
+      {
+        "description": "fluo scale offset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fluo_offset",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "The names assigned to each dataset in the order: fluorescence, diffraction, absorption, monitor.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "dataset_names",
+        "type": "list",
+        "value": "[fluo, xrd, stxm, monitor]"
+      },
+      {
+        "description": "path to the calibration file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "calibration_path",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "fluo gain.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fluo_gain",
+        "type": "float",
+        "value": "0.01"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading multi-modal data.",
+    "warn": ""
+  },
+  "MonitorCorrection": {
+    "citation": [],
+    "info": "corrects the data to the monitor counts\nThis plugin corrects data[0] from data[1] by dividing. We allow a scale and offset due to I18's uncalibrated ic.",
+    "name": "MonitorCorrection",
+    "parameters": [
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[to_be_corrected, monitor]"
+      },
+      {
+        "description": "d.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "denominator_offset",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "b.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "nominator_offset",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "the pattern to apply it to.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "pattern",
+        "type": "str",
+        "value": "PROJECTION"
+      },
+      {
+        "description": "a.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "nominator_scale",
+        "type": "float",
+        "value": "1.0"
+      },
+      {
+        "description": "c.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "denominator_scale",
+        "type": "float",
+        "value": "1.0"
+      }
+    ],
+    "synopsis": "A plugin to crop a spectra.",
+    "warn": ""
+  },
+  "MonitorCorrectionNd": {
+    "citation": [],
+    "info": "corrects the data to the monitor counts\nThis plugin corrects data[0] from data[1] by dividing. We allow a scale and offset due to I18's uncalibrated ic.",
+    "name": "MonitorCorrectionNd",
+    "parameters": [
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[to_be_corrected, monitor]"
+      },
+      {
+        "description": "d.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "denominator_offset",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "b.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "nominator_offset",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "a.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "nominator_scale",
+        "type": "float",
+        "value": "1.0"
+      },
+      {
+        "description": "the pattern to apply it to.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "data_pattern",
+        "type": "str",
+        "value": "SPECTRUM"
+      },
+      {
+        "description": "c.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "denominator_scale",
+        "type": "float",
+        "value": "1.0"
+      },
+      {
+        "description": "the pattern to apply it to.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "monitor_pattern",
+        "type": "str",
+        "value": "CHANNEL"
+      }
+    ],
+    "synopsis": "A plugin to crop a spectra.",
+    "warn": ""
+  },
+  "MrcLoader": {
+    "citation": [],
+    "info": "Load Medical Research Council (MRC) formatted image data.",
+    "name": "MrcLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "tomo"
+      }
+    ],
+    "synopsis": "A class for MRC data.",
+    "warn": ""
+  },
+  "MultiNxtomoLoader": {
+    "citation": [],
+    "info": "A class to load multiple scans in Nexus format into one dataset.",
+    "name": "MultiNxtomoLoader",
+    "parameters": [
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "tomo"
+      },
+      {
+        "description": "Dimension to stack or concatenate.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "stack_or_cat_dim",
+        "type": "int",
+        "value": "3"
+      },
+      {
+        "description": "The shared part of the name of each file (not including .nxs).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "file_name",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Path to the data inside the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "data_path",
+        "type": "str",
+        "value": "entry1/tomo_entry/data/data"
+      },
+      {
+        "description": "The start and end of file numbers.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "range",
+        "type": "list",
+        "value": "[0, 10]"
+      },
+      {
+        "description": "New axis label, if required, in the form 'name.units'.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "axis_label",
+        "type": "str",
+        "value": "scan.number"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Stack or concatenate the data (4D and 3D respectively).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "stack_or_cat",
+        "type": "str",
+        "value": "stack"
+      }
+    ],
+    "synopsis": "A class for loading multiple standard tomography scans.",
+    "warn": ""
+  },
+  "NoProcessPlugin": {
+    "citation": [],
+    "info": "The base class from which all plugins should inherit.",
+    "name": "NoProcessPlugin",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Dummy parameter for testing.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dummy",
+        "type": "int",
+        "value": "10"
+      },
+      {
+        "description": "Explicitly state the slicing pattern.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "pattern",
+        "type": "NoneType",
+        "value": "None"
+      }
+    ],
+    "synopsis": "Plugin to test loading and saving without processing.",
+    "warn": ""
+  },
+  "NxfluoLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXFluo file.",
+    "name": "NxfluoLoader",
+    "parameters": [
+      {
+        "description": "fluo scale offset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fluo_offset",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "fluo gain.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "fluo_gain",
+        "type": "float",
+        "value": "0.01"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "fluo"
+      }
+    ],
+    "synopsis": "A class for loading nxfluo data.",
+    "warn": ""
+  },
+  "NxmonitorLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXmonitor file.",
+    "name": "NxmonitorLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "monitor"
+      }
+    ],
+    "synopsis": "A class for loading nxmonitor data.",
+    "warn": ""
+  },
+  "NxptychoLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXstxm file.",
+    "name": "NxptychoLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "ptycho"
+      }
+    ],
+    "synopsis": "A class for loading nxstxm data.",
+    "warn": ""
+  },
+  "NxstxmLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXstxm file.",
+    "name": "NxstxmLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "stxm"
+      }
+    ],
+    "synopsis": "A class for loading nxstxm data.",
+    "warn": ""
+  },
+  "NxtomoLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from a hdf5 file.",
+    "name": "NxtomoLoader",
+    "parameters": [
+      {
+        "description": "Path to the image key entry inside the nxs file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "image_key_path",
+        "type": "str",
+        "value": "entry1/tomo_entry/instrument/detector/image_key"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "tomo"
+      },
+      {
+        "description": "Set to true if this reshape is required.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "3d_to_4d",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Optional Path to the flat field data file, nxs path and scale value.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "flat",
+        "type": "list",
+        "value": "[None, None, 1]"
+      },
+      {
+        "description": "Path to the data inside the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "data_path",
+        "type": "str",
+        "value": "entry1/tomo_entry/data/data"
+      },
+      {
+        "description": "Optional path to the dark field data file, nxs path and scale value.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dark",
+        "type": "list",
+        "value": "[None, None, 1]"
+      },
+      {
+        "description": "A python statement to be evaluated or a file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "angles",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "List of batch numbers of flats (start at 1) to ignore.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ignore_flats",
+        "type": "NoneType",
+        "value": "None"
+      }
+    ],
+    "synopsis": "A class for loading standard tomography data in Nexus format.",
+    "warn": ""
+  },
+  "NxxrdLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from an NXxrd file.",
+    "name": "NxxrdLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "name",
+        "type": "str",
+        "value": "xrd"
+      },
+      {
+        "description": "path to the calibration file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "calibration_path",
+        "type": "NoneType",
+        "value": "None"
+      }
+    ],
+    "synopsis": "A class for loading nxxrd data.",
+    "warn": ""
+  },
+  "P2rFlyScanDetectorLoader": {
+    "citation": [],
+    "info": "A class to load p2r fly scan detector data from a Nexus file.",
+    "name": "P2rFlyScanDetectorLoader",
+    "parameters": [
+      {
+        "description": "Path to the image key entry inside the nxs file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "image_key_path",
+        "type": "str",
+        "value": "entry1/tomo_entry/instrument/detector/image_key"
+      },
+      {
+        "description": "Set to true if this reshape is required.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "3d_to_4d",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Optional Path to the flat field data file, nxs path and scale value.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "flat",
+        "type": "list",
+        "value": "[None, None, 1]"
+      },
+      {
+        "description": "Path to the data inside the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "data_path",
+        "type": "str",
+        "value": "entry1/tomo_entry/data/data"
+      },
+      {
+        "description": "Optional path to the dark field data file, nxs path and scale value.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dark",
+        "type": "list",
+        "value": "[None, None, 1]"
+      },
+      {
+        "description": "A python statement to be evaluated or a file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "angles",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "List of batch numbers of flats (start at 1) to ignore.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ignore_flats",
+        "type": "NoneType",
+        "value": "None"
+      }
+    ],
+    "synopsis": "A class for loading p2r fly scan detector data.",
+    "warn": ""
+  },
+  "PaganinFilter": {
+    "citation": [
+      {
+        "bibtex": "@article{paganin2002simultaneous,\ntitle={Simultaneous phase and amplitude extraction from a single             defocused image of a homogeneous object},\nauthor={Paganin, David and Mayo, SC and Gureyev, Tim E and              Miller, Peter R and Wilkins, Steve W},\njournal={Journal of microscopy},\nvolume={206},\nnumber={1},\npages={33--40},\nyear={2002},\npublisher={Wiley Online Library}}",
+        "description": "The contrast enhancement used in this processing chain is taken             from this work.",
+        "doi": "doi: DOI: 10.1046/j.1365-2818.2002.01010.x",
+        "endnote": "%0 Journal Article\n%T Simultaneous phase and amplitude extraction from a single              defocused image of a homogeneous object\n%A Paganin, David\n%A Mayo, SC\n%A Gureyev, Tim E\n%A Miller, Peter R\n%A Wilkins, Steve W\n%J Journal of microscopy\n%V 206\n%N 1\n%P 33-40\n%@ 1365-2818\n%D 2002\n%I Wiley Online Library\n"
+      }
+    ],
+    "info": "A plugin to apply Paganin filter (contrast enhancement) on projections.",
+    "name": "PaganinFilter",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Distance from sample to detection - Unit is metre.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "Distance",
+        "type": "float",
+        "value": "1.0"
+      },
+      {
+        "description": "ratio of delta/beta.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "Ratio",
+        "type": "float",
+        "value": "250.0"
+      },
+      {
+        "description": "Pad to the top and bottom of projection.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "Padtopbottom",
+        "type": "int",
+        "value": "10"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Numpy pad method.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "Padmethod",
+        "type": "str",
+        "value": "edge"
+      },
+      {
+        "description": "Given X-ray energy in keV.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "Energy",
+        "type": "float",
+        "value": "53.0"
+      },
+      {
+        "description": "Increment all values by this amount before taking the log.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "increment",
+        "type": "float",
+        "value": "1.0"
+      },
+      {
+        "description": "Pixel size - Unit is micron.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "Resolution",
+        "type": "float",
+        "value": "1.28"
+      },
+      {
+        "description": "Pad to the left and right of projection.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "Padleftright",
+        "type": "int",
+        "value": "10"
+      }
+    ],
+    "synopsis": "A plugin to apply the Paganin filter.",
+    "warn": "The 'log' parameter in the reconstruction should be set to FALSE.\nPreviewing a subset of sinograms will alter the result, due to the global nature of this filter. If this is necessary, ensure they are consecutive."
+  },
+  "Pca": {
+    "citation": [],
+    "info": "This plugin performs independent component analysis on XRD/XRF spectra.",
+    "name": "Pca",
+    "parameters": [
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[scores, eigenvectors]"
+      },
+      {
+        "description": "The chunk to work on.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "chunk",
+        "type": "str",
+        "value": "SINOGRAM"
+      },
+      {
+        "description": "The number expected components.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "number_of_components",
+        "type": "int",
+        "value": "3"
+      },
+      {
+        "description": "To subtract the mean or not.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "whiten",
+        "type": "int",
+        "value": "1"
+      }
+    ],
+    "synopsis": "A plugin to fit peaks.",
+    "warn": ""
+  },
+  "PolyBackgroundEstimator": {
+    "citation": [],
+    "info": "This plugin uses peakutils to find peaks in spectra. This is then metadata.",
+    "name": "PolyBackgroundEstimator",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "max number of iterations.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "MaxIterations",
+        "type": "int",
+        "value": "12"
+      },
+      {
+        "description": "Create a list of the dataset(s).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[Peaks]"
+      },
+      {
+        "description": "max number of polys.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "n",
+        "type": "int",
+        "value": "2"
+      },
+      {
+        "description": "weightings to apply.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "weights",
+        "type": "str",
+        "value": "1/data"
+      },
+      {
+        "description": "ratio of variance between successive poly iterations.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "pvalue",
+        "type": "float",
+        "value": "0.9"
+      }
+    ],
+    "synopsis": "A plugin to find the peaks.",
+    "warn": ""
+  },
+  "ProjectionShift": {
+    "citation": [],
+    "info": "Horizontal and vertical shift are calculated using a chosen method and added to the metadata. The vertical and horizontal shifts can be corrected using the ProjectionVerticalAlignment and SinogramAlignment (in 'shift' mode) plugins respectively.",
+    "name": "ProjectionShift",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Number of keypoints to use in ORB feature detector.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "n_keypoints",
+        "type": "int",
+        "value": "20"
+      },
+      {
+        "description": "Set the output dataset name.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[proj_shift]"
+      },
+      {
+        "description": "Position of the template to match (required) e.g. [300:500, 300:500].",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "template",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "e.g. [a, b] will set all values above a to b.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "threshold",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Method used to calculate the shift between images. Choose from 'template_matching' and 'orb_ransac'.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "method",
+        "type": "str",
+        "value": "orb_ransac"
+      }
+    ],
+    "synopsis": "Calculate horizontal and vertical shifts in the projection images over time, using template matching.",
+    "warn": "The template parameter is required and must not be None."
+  },
+  "ProjectionVerticalAlignment": {
+    "citation": [],
+    "info": "Correct for vertical shift over projection images.",
+    "name": "ProjectionVerticalAlignment",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "Align each projection vertically with shift values calculated using the ProjectionShift plugin.",
+    "warn": "Requires the PluginShift plugin to precede it."
+  },
+  "PyfaiAzimuthalIntegrator": {
+    "citation": [],
+    "info": "1D azimuthal integrator by pyFAI.",
+    "name": "PyfaiAzimuthalIntegrator",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Should we mask.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "use_mask",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "number of bins.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "num_bins",
+        "type": "int",
+        "value": "1005"
+      }
+    ],
+    "synopsis": "A plugin to integrate azimuthally \"symmetric\" signals i.e. SAXS, WAXS or XRD.Requires a calibration file.",
+    "warn": ""
+  },
+  "PyfaiAzimuthalIntegratorSeparate": {
+    "citation": [],
+    "info": "1D azimuthal integrator by pyFAI.",
+    "name": "PyfaiAzimuthalIntegratorSeparate",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Should we mask.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "use_mask",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "number of azimuthal bins.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "num_bins_azim",
+        "type": "int",
+        "value": "20"
+      },
+      {
+        "description": "A.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[powder, spots]"
+      },
+      {
+        "description": "Percentile to threshold.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "percentile",
+        "type": "int",
+        "value": "50"
+      },
+      {
+        "description": "number of bins.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "num_bins",
+        "type": "int",
+        "value": "1005"
+      }
+    ],
+    "synopsis": "A plugin to integrate azimuthally \"symmetric\" signals i.e. SAXS, WAXS or XRD.Requires a calibration file.",
+    "warn": ""
+  },
+  "PyfaiAzimuthalIntegratorWithBraggFilter": {
+    "citation": [],
+    "info": "Uses pyfai to remap the data. We then remap, percentile file and integrate.",
+    "name": "PyfaiAzimuthalIntegratorWithBraggFilter",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Should we mask.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "use_mask",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "number of bins.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "num_bins_azim",
+        "type": "int",
+        "value": "200"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "threshold of percentile filter.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "thresh",
+        "type": "list",
+        "value": "[5, 95]"
+      },
+      {
+        "description": "number of bins.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "num_bins",
+        "type": "int",
+        "value": "1005"
+      }
+    ],
+    "synopsis": "A plugin to integrate azimuthally \"symmetric\" signals i.e. SAXS, WAXS or XRD.Requires a calibration file.",
+    "warn": ""
+  },
+  "Pymca": {
+    "citation": [],
+    "info": "uses pymca to fit spectral data.",
+    "name": "Pymca",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "path to the config file.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "config",
+        "type": "str",
+        "value": "Savu/test_data/data/test_config.cfg"
+      }
+    ],
+    "synopsis": "A plugin to fit spectral data.",
+    "warn": ""
+  },
+  "QuantisationFilter": {
+    "citation": [],
+    "info": "A plugin to quantise an image into discrete levels.",
+    "name": "QuantisationFilter",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "False if min/max intensity comes from the metadata, True if it's user-defined.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "explicit_min_max",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Global maximum intensity.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "max_intensity",
+        "type": "int",
+        "value": "65535"
+      },
+      {
+        "description": "Number of levels.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "levels",
+        "type": "int",
+        "value": "5"
+      },
+      {
+        "description": "Global minimum intensity.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "min_intensity",
+        "type": "int",
+        "value": "0"
+      }
+    ],
+    "synopsis": "A plugin to to quantise an image into a number of discrete levels.",
+    "warn": ""
+  },
+  "Random3dTomoLoader": {
+    "citation": [],
+    "info": "A hdf5 dataset of a specified size is created at runtime using numpy random sampling (numpy.random), saved with relevant meta_data to a NeXus file, and used as input. It recreates the behaviour of the nxtomo loader but with random data. The input file path passed to Savu will be ignored (use a dummy)\nNote: Further extensions planned to allow the generated data to be re-loaded with the nxtomo_loader.",
+    "name": "Random3dTomoLoader",
+    "parameters": [
+      {
+        "description": "Specify position of darks and flats (in that order) in the data.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "image_key",
+        "type": "list",
+        "value": "[[0, 1], [2, 3]]"
+      },
+      {
+        "description": "A list of axis labels.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "axis_labels",
+        "type": "list",
+        "value": "[rotation_angle.degrees, detector_y.angles, detector_x.angles]"
+      },
+      {
+        "description": "A numpy array data type.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dtype",
+        "type": "str",
+        "value": "int16"
+      },
+      {
+        "description": "Patterns.",
+        "is_hidden": true,
+        "is_user": false,
+        "name": "patterns",
+        "type": "list",
+        "value": "[SINOGRAM.0c.1s.2c, PROJECTION.0s.1c.2c]"
+      },
+      {
+        "description": "Set the distribution interval.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "range",
+        "type": "list",
+        "value": "[1, 10]"
+      },
+      {
+        "description": "A python statement to be evaluated or a file - if the value is None, values will be in the interval [0, 180].",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "angles",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Assign a name to the created h5 file.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "file_name",
+        "type": "str",
+        "value": "input_array"
+      },
+      {
+        "description": "Pattern used to create and store the hdf5 dataset - default is the first pattern in the pattern dictionary.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "pattern",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": true,
+        "is_user": false,
+        "name": "dataset_name",
+        "type": "str",
+        "value": "tomo"
+      },
+      {
+        "description": "A list specifiying the required data size.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "size",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A full-field tomography loader that creates a NeXus file in NXtomo format and contains a random number generated hdf5 dataset of a specified size.",
+    "warn": ""
+  },
+  "RandomHdf5Loader": {
+    "citation": [],
+    "info": "A hdf5 dataset of a specified size is created at runtime using numpy random sampling (numpy.random) and saved to file. This created dataset will be used as the input file, and the input file path passed to Savu will be ignored (use a dummy).",
+    "name": "RandomHdf5Loader",
+    "parameters": [
+      {
+        "description": "A list of the axis labels to be associated with each dimension, of the form ['name1.unit1', 'name2.unit2',...].",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "axis_labels",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "A numpy array data type.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dtype",
+        "type": "str",
+        "value": "int16"
+      },
+      {
+        "description": "A list of data access patterns e.g. [SINOGRAM.0c.1s.2c, PROJECTION.0s.1c.2s], where 'c' and 's' represent core and slice dimensions respectively and every dimension must be specified.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "patterns",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Set the distribution interval.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "range",
+        "type": "list",
+        "value": "[1, 10]"
+      },
+      {
+        "description": "A python statement to be evaluated or a file - if the value is None, values will be in the interval [0, 180].",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "angles",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Assign a name to the created h5 file.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "file_name",
+        "type": "str",
+        "value": "input_array"
+      },
+      {
+        "description": "Pattern used to create and store the hdf5 dataset - default is the first pattern in the pattern dictionary.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "pattern",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The name assigned to the dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "dataset_name",
+        "type": "str",
+        "value": "tomo"
+      },
+      {
+        "description": "A list specifiying the required data size.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "size",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A loader that creates a random number generated hdf5 dataset of any size.",
+    "warn": ""
+  },
+  "RavenFilter": {
+    "citation": [
+      {
+        "bibtex": "@article{raven1998numerical,\ntitle={Numerical removal of ring artifacts in              microtomography},\nauthor={Raven, Carsten},\njournal={Review of scientific instruments},\nvolume={69},\nnumber={8},\npages={2978--2980},\nyear={1998},\npublisher={AIP Publishing}\n}",
+        "description": "The ring artefact removal algorithm used in this processing              chain is taken from this work.",
+        "doi": "doi: 10.1063/1.1149043",
+        "endnote": "%0 Journal Article\n%T Numerical removal of ring artifacts in microtomography\n%A Raven, Carsten\n%J Review of scientific instruments\n%V 69\n%N 8\n%P 2978-2980\n%@ 0034-6748\n%D 1998\n%I AIP Publishing"
+      }
+    ],
+    "info": "Ring artefact removal method.",
+    "name": "RavenFilter",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "To define the shape of filter.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "nvalue",
+        "type": "int",
+        "value": "4"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "How many rows to be applied the filter.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "vvalue",
+        "type": "int",
+        "value": "2"
+      },
+      {
+        "description": "Padding for Fourier transform.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "padFT",
+        "type": "int",
+        "value": "20"
+      },
+      {
+        "description": "To define the shape of filter, e.g. bad=10, moderate=20, minor=50.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "uvalue",
+        "type": "int",
+        "value": "20"
+      }
+    ],
+    "synopsis": "A plugin to remove ring artefacts.",
+    "warn": ""
+  },
+  "ReproduceFit": {
+    "citation": [],
+    "info": "This plugin reproduces the fitted curves. Its for diagnostics.",
+    "name": "ReproduceFit",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[FitWeights, FitWidths, FitAreas, Backgrounds]"
+      },
+      {
+        "description": "A.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[Sum, Individual_curves]"
+      },
+      {
+        "description": "Which shape do you want.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "peak_shape",
+        "type": "str",
+        "value": "gaussian"
+      },
+      {
+        "description": "the peak index.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "PeakIndex",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "An initial guess at the width.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "width_guess",
+        "type": "float",
+        "value": "0.02"
+      }
+    ],
+    "synopsis": "A plugin to regenerate the fitted curves.",
+    "warn": ""
+  },
+  "RingRemovalNormalization": {
+    "citation": [],
+    "info": "Method to remove stripe artefacts in a sinogram (<-> ring artefacts in a reconstructed image) using a normalization-based method. A simple improvement to handle partial stripes is included.",
+    "name": "RingRemovalNormalization",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Divide the sinogram to many chunks of rows.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "number_of_chunks",
+        "type": "int",
+        "value": "1"
+      },
+      {
+        "description": "Radius of the Gaussian kernel.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "radius",
+        "type": "int",
+        "value": "11"
+      }
+    ],
+    "synopsis": "A plugin working in sinogram space to remove stripe artefacts.",
+    "warn": ""
+  },
+  "RingRemovalWaveletfft": {
+    "citation": [],
+    "info": "Ring artefact removal method.",
+    "name": "RingRemovalWaveletfft",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Wavelet decomposition level.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "level",
+        "type": "int",
+        "value": "3"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Order of the the Daubechies (DB) wavelets.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "nvalue",
+        "type": "int",
+        "value": "5"
+      },
+      {
+        "description": "Padding for Fourier transform.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "padFT",
+        "type": "int",
+        "value": "20"
+      },
+      {
+        "description": "Damping parameter. Larger is stronger.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "sigma",
+        "type": "int",
+        "value": "1"
+      }
+    ],
+    "synopsis": "A plugin removes ring artefacts.",
+    "warn": ""
+  },
+  "SavuNexusLoader": {
+    "citation": [],
+    "info": "A class to load datasets, and associated metadata, from a Savu output\nnexus file\nBy default, the last instance of each unique dataset name will be loaded\nOpt instead to load a subset of these datasets, or individual datasets by\npopulating the parameters.",
+    "name": "SavuNexusLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames to apply to ALL datasets, else a dictionary of slice lists where the key is the dataset name.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "dict",
+        "value": "{}"
+      },
+      {
+        "description": "Override the default by choosing specific dataset(s) to load, by stating the NXdata name.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Override the dataset names associated with the datasets parameter above.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "names",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading savu output data.",
+    "warn": ""
+  },
+  "ScikitimageFilterBackProjection": {
+    "citation": [
+      {
+        "bibtex": "@book{avinash2001principles,\n title={Principles of computerized tomographic imaging},\n author={Kak, Avinash C. and Slaney, Malcolm},\n year={2001},\n publisher={Society for Industrial and Applied Mathematics}\n}",
+        "description": "The Tomographic reconstruction performed in this processing chain is derived from this work.",
+        "doi": "http://dx.doi.org/10.1137/1.9780898719277",
+        "endnote": "%0 Book\n%T Principles of computerized tomographic imaging\n%A Kak, Avinash C.\n%A Slaney, Malcolm\n%@ 089871494X\n%D 2001\n%I Society for Industrial and Applied Mathematics"
+      }
+    ],
+    "info": "A Plugin to reconstruct an image by filter back projection\nusing the inverse radon transform from scikit-image.",
+    "name": "ScikitimageFilterBackProjection",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Dataset to use as volume initialiser (doesn't currently work with preview).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "init_vol",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Ratio of the masks diameter in pixels to the smallest edge size along given axis.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ratio",
+        "type": "float",
+        "value": "0.95"
+      },
+      {
+        "description": "Take the log of the data before reconstruction (True or False).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "log",
+        "type": "bool",
+        "value": "True"
+      },
+      {
+        "description": "Number of rows and columns in the reconstruction.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "output_size",
+        "type": "str",
+        "value": "auto"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Override the default log function.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "log_func",
+        "type": "str",
+        "value": "np.nan_to_num(-np.log(sino))"
+      },
+      {
+        "description": "Filter used in frequency domain filtering Ramp filter used by default. Filters available: ramp, shepp-logan, cosine, hamming, hann. Assign None to use no filter.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "filter",
+        "type": "str",
+        "value": "ramp"
+      },
+      {
+        "description": "Set any values in the reconstructed image outside of this range to zero.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "force_zero",
+        "type": "list",
+        "value": "[None, None]"
+      },
+      {
+        "description": "Assume the reconstructed image is zero outside the inscribed circle. Also changes the default output_size to match the behaviour of radon called with circle=True.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "circle",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Centre of rotation to use for the reconstruction.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "centre_of_rotation",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "interpolation method used in reconstruction. Methods available: 'linear', 'nearest', and 'cubic' ('cubic' is slow).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "interpolation",
+        "type": "str",
+        "value": "linear"
+      }
+    ],
+    "synopsis": "Wrapper for scikitimage FBP function.",
+    "warn": ""
+  },
+  "ScikitimageSart": {
+    "citation": [
+      {
+        "bibtex": "@book{avinash2001principles,\n title={Principles of computerized tomographic imaging},\n author={Kak, Avinash C. and Slaney, Malcolm},\n year={2001},\n publisher={Society for Industrial and Applied Mathematics}\n}",
+        "description": "The Tomographic reconstruction performed in this processing chain is derived from this work.",
+        "doi": "http://dx.doi.org/10.1137/1.9780898719277",
+        "endnote": "%0 Book\n%T Principles of computerized tomographic imaging\n%A Kak, Avinash C.\n%A Slaney, Malcolm\n%@ 089871494X\n%D 2001\n%I Society for Industrial and Applied Mathematics"
+      }
+    ],
+    "info": "A Plugin to reconstruct an image by filter back projection using the inverse radon transform from scikit-image\n:param projection_shifts : 1D array, dtype=float. Shift the projections contained in radon_image (the sinogram) by this many pixels before reconstructing the image. The i'th value defines the shift of the i'th column of radon_image. Default: None\n:param clip : length-2 sequence of floats. Force all values in the reconstructed tomogram to lie in the range [clip[0], clip[1]]. Default: None\n:param relaxation : float. Relaxation parameter for the update step. A higher value can improve the convergence rate, but one runs the risk of instabilities. Values close to or higher than 1 are not recommended. Default: None.",
+    "name": "ScikitimageSart",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Dataset to use as volume initialiser (doesn't currently work with preview).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "init_vol",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Ratio of the masks diameter in pixels to the smallest edge size along given axis.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ratio",
+        "type": "float",
+        "value": "0.95"
+      },
+      {
+        "description": "Take the log of the data before reconstruction (True or False).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "log",
+        "type": "bool",
+        "value": "True"
+      },
+      {
+        "description": "Number of rows and columns in the reconstruction.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "output_size",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "2D array, dtype=float, optional. Image containing an initial reconstruction estimate. Shape of this array should be (radon_image.shape[0], radon_image.shape[0]). The default is a filter backprojection using scikit.image.iradon as \"result\".",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "image",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Override the default log function.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "log_func",
+        "type": "str",
+        "value": "np.nan_to_num(-np.log(sino))"
+      },
+      {
+        "description": "Filter used in frequency domain filtering. Ramp filter used by default. Filters available: ramp, shepp-logan, cosine, hamming, hann. Assign None to use no filter.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "filter",
+        "type": "str",
+        "value": "ramp"
+      },
+      {
+        "description": "Number of iterations in the reconstruction.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "iterations",
+        "type": "int",
+        "value": "1"
+      },
+      {
+        "description": "Set any values in the reconstructed image outside of this range to zero.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "force_zero",
+        "type": "list",
+        "value": "[None, None]"
+      },
+      {
+        "description": "Assume the reconstructed image is zero outside the inscribed circle. Also changes the default output_size to match the behaviour of radon called with circle=True.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "circle",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Centre of rotation to use for the reconstruction.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "centre_of_rotation",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "interpolation method used in reconstruction. Methods available: 'linear', 'nearest', and 'cubic' ('cubic' is slow).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "interpolation",
+        "type": "str",
+        "value": "linear"
+      }
+    ],
+    "synopsis": "Wrapper for scikitimage SART function.",
+    "warn": ""
+  },
+  "SimpleFit": {
+    "citation": [],
+    "info": "This plugin fits peaks.",
+    "name": "SimpleFit",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "A.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[FitWeights, FitWidths, FitAreas, residuals]"
+      },
+      {
+        "description": "Which shape do you want.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "peak_shape",
+        "type": "str",
+        "value": "gaussian"
+      },
+      {
+        "description": "the peak index.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "PeakIndex",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "An initial guess at the width.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "width_guess",
+        "type": "float",
+        "value": "0.02"
+      }
+    ],
+    "synopsis": "A plugin to fit peaks.",
+    "warn": ""
+  },
+  "SimpleRecon": {
+    "citation": [
+      {
+        "bibtex": "@book{avinash2001principles,\n  title={Principles of computerized tomographic imaging},\n  author={Avinash C.. Kak and Slaney, Malcolm},\n  year={2001},\n  publisher={Society for Industrial and Applied Mathematics}\n}",
+        "description": "The Tomographic reconstruction performed in this processing chain is derived from this work.",
+        "doi": "http://dx.doi.org/10.1137/1.9780898719277",
+        "endnote": "%0 Book\n%T Principles of computerized tomographic imaging\n%A Avinash C.. Kak\n%A Slaney, Malcolm\n%@ 089871494X\n%D 2001\n%I Society for Industrial and Applied Mathematics"
+      }
+    ],
+    "info": "A Plugin to apply a simple reconstruction with no dependancies.",
+    "name": "SimpleRecon",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Dataset to use as volume initialiser (doesn't currently work with preview).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "init_vol",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Ratio of the masks diameter in pixels to the smallest edge size along given axis.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ratio",
+        "type": "float",
+        "value": "0.95"
+      },
+      {
+        "description": "Take the log of the data before reconstruction (True or False).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "log",
+        "type": "bool",
+        "value": "True"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Pad the sinogram to centre it in order to fill the reconstructed volume ROI for asthetic purposes. NB: Only available for selected algorithms and will be ignored otherwise. WARNING: This will significantly increase the size of the data and the time to compute the reconstruction).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "centre_pad",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Pad the sinogram width to fill the reconstructed volume for asthetic purposes. Choose from True (defaults to sqrt(2)), False or float <= 2.1. NB: Only available for selected algorithms and will be ignored otherwise. WARNING: This will increase the size of the data and the time to compute the reconstruction).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "outer_pad",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Override the default log function.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "log_func",
+        "type": "str",
+        "value": "np.nan_to_num(-np.log(sino))"
+      },
+      {
+        "description": "Set any values in the reconstructed image outside of this range to zero.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "force_zero",
+        "type": "list",
+        "value": "[None, None]"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Centre of rotation to use for the reconstruction.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "centre_of_rotation",
+        "type": "float",
+        "value": "0.0"
+      }
+    ],
+    "synopsis": "A simple implementation of a reconstruction routine for testing.",
+    "warn": ""
+  },
+  "SinogramAlignment": {
+    "citation": [
+      {
+        "bibtex": "@Article{C4CP04488F, \nauthor ={Price, S. W. T. and Ignatyev, K. and Geraki, K. and              Basham, M. and Filik, J. and Vo, N. T. and Witte, P. T. and              Beale, A. M. and Mosselmans, J. F. W.}, \ntitle  ={Chemical imaging of single catalyst particles with              scanning [small mu ]-XANES-CT and [small mu ]-XRF-CT}, \njournal  ={Phys. Chem. Chem. Phys.}, \nyear  ={2015}, \nvolume  ={17}, \nissue  ={1}, \npages  ={521-529}, \npublisher  ={The Royal Society of Chemistry}, \ndoi  ={10.1039/C4CP04488F}, \nurl  ={http://dx.doi.org/10.1039/C4CP04488F}, \n}",
+        "description": "The Tomographic filtering performed in this processing chain is derived from this work.",
+        "doi": "doi: 10.1039/c4cp04488f",
+        "endnote": "%0 Journal Article\n%T Chemical imaging of single catalyst particles with scanning             [small mu ]-XANES-CT and [small mu ]-XRF-CT\n%A Price, Stephen W.T.\n%A Ignatyev, Konstantin\n%A Geraki, Kalotina\n%A Basham, Mark\n%A Filik, Jacob\n%A Vo, Nghia T.\n%A Witte, Peter T.\n%A Beale, Andrew M.\n%A Mosselmans, J. Fred W.\n%J Physical Chemistry Chemical Physics\n%V 17\n%N 1\n%P 521-529\n%@ 1094-4087\n%D 2015\n%I Royal Society of Chemistry"
+      }
+    ],
+    "info": "The centre of mass of each row is determined and then a sine function fit\nthrough these to determine the centre of rotation. The residual between each centre of mass and the sine function is then used to align each row.",
+    "name": "SinogramAlignment",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Initial guess for the parameters of scipy.optimize.curve_fit.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "p0",
+        "type": "tuple",
+        "value": "(1, 1, 1)"
+      },
+      {
+        "description": "Either centre_of_mass or shift, with the latter requiring ProjectionVerticalAlignment prior to this plugin.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "type",
+        "type": "str",
+        "value": "centre_of_mass"
+      },
+      {
+        "description": "e.g. a.b will set all values above a to b.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "threshold",
+        "type": "NoneType",
+        "value": "None"
+      }
+    ],
+    "synopsis": "A plugin to determine the centre of rotation of a sinogram and to align the rows of a sinogram e.g. in the case of motor backlash.",
+    "warn": ""
+  },
+  "SinogramClean": {
+    "citation": [],
+    "info": "A plugin to calculate the centre of rotation using the Vo Method.",
+    "name": "SinogramClean",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The default names.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The ratio between the size of object and FOV of the camera.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ratio",
+        "type": "float",
+        "value": "2.0"
+      },
+      {
+        "description": "Drop lines around vertical center of the mask.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "row_drop",
+        "type": "int",
+        "value": "20"
+      }
+    ],
+    "synopsis": "A plugin to find the center of rotation per frame.",
+    "warn": ""
+  },
+  "SpectrumCrop": {
+    "citation": [],
+    "info": "crops a spectrum to a range.",
+    "name": "SpectrumCrop",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "range to crop to.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "crop_range",
+        "type": "list",
+        "value": "[2.0, 18.0]"
+      },
+      {
+        "description": "range to crop to.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "axis",
+        "type": "str",
+        "value": "energy"
+      }
+    ],
+    "synopsis": "A plugin to crop a spectra.",
+    "warn": ""
+  },
+  "StageMotion": {
+    "citation": [],
+    "info": "A Plugin to calculate stage motion from motion positions.",
+    "name": "StageMotion",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Description of a_value.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "a_value",
+        "type": "NoneType",
+        "value": "None"
+      }
+    ],
+    "synopsis": "Calculate stage motion from motor positions.",
+    "warn": ""
+  },
+  "Stats": {
+    "citation": [],
+    "info": "",
+    "name": "Stats",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "the output dataset.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[stats]"
+      },
+      {
+        "description": "which direction to perform this.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "direction",
+        "type": "str",
+        "value": "PROJECTION"
+      },
+      {
+        "description": "create a list of required stats calcs.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "required_stats",
+        "type": "list",
+        "value": "[max]"
+      }
+    ],
+    "synopsis": "grabs a selection of statistics.",
+    "warn": ""
+  },
+  "StripBackground": {
+    "citation": [],
+    "info": "1D background removal. PyMca magic function.",
+    "name": "StripBackground",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Whats the savitzgy golay window.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "SG_width",
+        "type": "int",
+        "value": "35"
+      },
+      {
+        "description": "Number of iterations.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "iterations",
+        "type": "int",
+        "value": "100"
+      },
+      {
+        "description": "A list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[in_datasets[0], background]"
+      },
+      {
+        "description": "Whats the savitzgy-golay poly order.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "SG_polyorder",
+        "type": "int",
+        "value": "5"
+      },
+      {
+        "description": "Half width of the rolling window.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "window",
+        "type": "int",
+        "value": "10"
+      },
+      {
+        "description": "How many iterations until smoothing occurs.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "SG_filter_iterations",
+        "type": "int",
+        "value": "5"
+      }
+    ],
+    "synopsis": "A plugin to automatically strip peaks and subtract background.",
+    "warn": ""
+  },
+  "StxmAnalysis": {
+    "citation": [],
+    "info": "This plugin performs basic STXM analysis of diffraction patterns.",
+    "name": "StxmAnalysis",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "A.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[bf, df, dpc_x, dpc_y, combined_dpc]"
+      },
+      {
+        "description": "path to the mask inside the file.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "mask_path",
+        "type": "str",
+        "value": "/mask"
+      },
+      {
+        "description": "takes in a mask currently in hdf format.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "mask_file",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "intensity threshold for the dark field.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "threshold",
+        "type": "float",
+        "value": "0.05"
+      }
+    ],
+    "synopsis": "A plugin to analyse STXM data from area detectors.",
+    "warn": ""
+  },
+  "SubpixelShift": {
+    "citation": [],
+    "info": "A plugin to apply a sub-pixel correction to images, for example to allow subpixel alignment for the AstraGpu plugin.",
+    "name": "SubpixelShift",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "The shift in x for the output image in pixels. Positive values correspond to data being shifted towards larger indices.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "x_shift",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "The module (skimage|scipy) to be used for image translation. skimage corresponds to skimage.transform.SimilarityTransform while scipy corresponds to scipy.ndimage.interpolation.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "transform_module",
+        "type": "str",
+        "value": "skimage"
+      }
+    ],
+    "synopsis": "A plugin to apply a subpixel x-shift to images.",
+    "warn": ""
+  },
+  "TestingSinoAlign": {
+    "citation": [
+      {
+        "bibtex": "@Article{C4CP04488F, \nauthor ={Price, S. W. T. and Ignatyev, K. and Geraki, K. and              Basham, M. and Filik, J. and Vo, N. T. and Witte, P. T. and              Beale, A. M. and Mosselmans, J. F. W.}, \ntitle  ={Chemical imaging of single catalyst particles with              scanning [small mu ]-XANES-CT and [small mu ]-XRF-CT}, \njournal  ={Phys. Chem. Chem. Phys.}, \nyear  ={2015}, \nvolume  ={17}, \nissue  ={1}, \npages  ={521-529}, \npublisher  ={The Royal Society of Chemistry}, \ndoi  ={10.1039/C4CP04488F}, \nurl  ={http://dx.doi.org/10.1039/C4CP04488F}, \n}",
+        "description": "The Tomographic filtering performed in this processing chain is derived from this work.",
+        "doi": "doi: 10.1039/c4cp04488f",
+        "endnote": "%0 Journal Article\n%T Chemical imaging of single catalyst particles with scanning             [small mu ]-XANES-CT and [small mu ]-XRF-CT\n%A Price, Stephen W.T.\n%A Ignatyev, Konstantin\n%A Geraki, Kalotina\n%A Basham, Mark\n%A Filik, Jacob\n%A Vo, Nghia T.\n%A Witte, Peter T.\n%A Beale, Andrew M.\n%A Mosselmans, J. Fred W.\n%J Physical Chemistry Chemical Physics\n%V 17\n%N 1\n%P 521-529\n%@ 1094-4087\n%D 2015\n%I Royal Society of Chemistry"
+      }
+    ],
+    "info": "The centre of mass of each row is determined and then a sine function fit\nthrough these to determine the centre of rotation. The residual between each centre of mass and the sine function is then used to align each row.",
+    "name": "TestingSinoAlign",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Initial guess for the parameters of scipy.optimize.curve_fit.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "p0",
+        "type": "tuple",
+        "value": "(1, 1, 1)"
+      },
+      {
+        "description": "e.g. [a, b] will set all values above a to b.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "threshold",
+        "type": "NoneType",
+        "value": "None"
+      }
+    ],
+    "synopsis": "A plugin to determine the centre of rotation of a sinogram and to align the rows of a sinogram e.g. in the case of motor backlash.",
+    "warn": ""
+  },
+  "ThresholdFilter": {
+    "citation": [],
+    "info": "A plugin to quantise an image into discrete levels.",
+    "name": "ThresholdFilter",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Threshold for black/white quantisation.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "intensity_threshold",
+        "type": "int",
+        "value": "32768"
+      },
+      {
+        "description": "False if plugin calculates black/white threshold, True if it's user-defined.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "explicit_threshold",
+        "type": "bool",
+        "value": "True"
+      }
+    ],
+    "synopsis": "A plugin to to quantise an image into a number of discrete levels.",
+    "warn": ""
+  },
+  "TiffSaver": {
+    "citation": [],
+    "info": "A class to save tomography data to tiff files.",
+    "name": "TiffSaver",
+    "parameters": [
+      {
+        "description": "The name of the dataset to save.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Hidden, dummy out_datasets entry.",
+        "is_hidden": true,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Override the default output tiff file prefix.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "prefix",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "How to slice the data.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "pattern",
+        "type": "str",
+        "value": "VOLUME_XZ"
+      }
+    ],
+    "synopsis": "A class to save output in tiff format.",
+    "warn": "Do not use this plugin if the raw data is greater than 100 GB."
+  },
+  "TimeBasedCorrection": {
+    "citation": [],
+    "info": "Apply a time-based dark and flat field correction to data.",
+    "name": "TimeBasedCorrection",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Set to True if you require values in the range [0, 1].",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_range",
+        "type": "bool",
+        "value": "False"
+      }
+    ],
+    "synopsis": "A time-based dark and flat field correction using linear interpolation.",
+    "warn": ""
+  },
+  "TimeBasedPlusDriftCorrection": {
+    "citation": [],
+    "info": "Apply a time-based dark and flat field correction on data with an image drift using linear interpolation and template matching.",
+    "name": "TimeBasedPlusDriftCorrection",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Set to True if you require values in the range [0, 1].",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_range",
+        "type": "bool",
+        "value": "False"
+      }
+    ],
+    "synopsis": "A time-based dark and flat field correction that accounts for image drift (Note: A work in progress but please try).",
+    "warn": ""
+  },
+  "TomopyRecon": {
+    "citation": [
+      {
+        "bibtex": "@article{gursoy2014tomopy,\ntitle={TomoPy: a framework for the analysis of synchrotron,\ntomographic data},\nauthor={G{\"u}rsoy, Doga and De Carlo, Francesco and Xiao,\nXianghui and Jacobsen, Chris},\njournal={Journal of synchrotron radiation},\nvolume={21},\nnumber={5},\npages={1188--1193},\nyear={2014},\npublisher={International Union of Crystallography}\n}",
+        "description": "An algorithm from the TomoPy framework is used to perform the              reconstruction in this processing pipeline",
+        "doi": "doi: 10.1107/S1600577514013939",
+        "endnote": "%0 Journal Article\n%T TomoPy: a framework for the analysis of synchrotron\ntomographic data\n%A Gursoy, Doga\n%A De Carlo, Francesco%A Xiao, Xianghui%A Jacobsen, Chris%J Journal of synchrotron radiation%V 21%N 5%P 1188-1193%@ 1600-5775%D 2014%I International Union of Crystallography"
+      }
+    ],
+    "info": "A wrapper to the tomopy reconstruction library. Extra keywords not required for the chosen algorithm will be ignored.",
+    "name": "TomopyRecon",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Regularization parameter for smoothing, valid for ospml_hybrid|ospml_quad|pml_hybrid|pml_quad.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "reg_par",
+        "type": "float",
+        "value": "0.0"
+      },
+      {
+        "description": "Ratio of the masks diameter in pixels to the smallest edge size along given axis.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ratio",
+        "type": "float",
+        "value": "0.95"
+      },
+      {
+        "description": "Take the log of the data before reconstruction (True or False).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "log",
+        "type": "bool",
+        "value": "True"
+      },
+      {
+        "description": "The reconstruction algorithm (art|bart|fbp|gridrec| mlem|osem|ospml_hybrid|ospml_quad|pml_hybrid|pml_quad |sirt).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "algorithm",
+        "type": "str",
+        "value": "gridrec"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Pad the sinogram width to fill the reconstructed volume for asthetic purposes. Choose from True (defaults to sqrt(2)), False or float <= 2.1. NB: Only available for selected algorithms and will be ignored otherwise. WARNING: This will increase the size of the data and the time to compute the reconstruction).",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "outer_pad",
+        "type": "bool",
+        "value": "False"
+      },
+      {
+        "description": "Override the default log function.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "log_func",
+        "type": "str",
+        "value": "np.nan_to_num(-np.log(sino))"
+      },
+      {
+        "description": "Number of iterations - only valid for iterative algorithms.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "n_iterations",
+        "type": "int",
+        "value": "1"
+      },
+      {
+        "description": "Valid for fbp|gridrec, options: none|shepp|cosine| hann|hamming|ramlak|parzen|butterworth).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "filter_name",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "Set any values in the reconstructed image outside of this range to zero.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "force_zero",
+        "type": "list",
+        "value": "[None, None]"
+      },
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Centre of rotation to use for the reconstruction.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "centre_of_rotation",
+        "type": "float",
+        "value": "0.0"
+      }
+    ],
+    "synopsis": "Wrapper around the tomopy reconstruction algorithms. See 'http://tomopy.readthedocs.io/en/latest/api/tomopy.recon.algorithm.html'.",
+    "warn": ""
+  },
+  "TxmLoader": {
+    "citation": [],
+    "info": "A class to load tomography data from the txm.",
+    "name": "TxmLoader",
+    "parameters": [
+      {
+        "description": "A slice list of required frames.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class for loading nxstxm data.",
+    "warn": ""
+  },
+  "VoCentering": {
+    "citation": [
+      {
+        "bibtex": "@article{vo2014reliable,\ntitle={Reliable method for calculating the center of rotation in parallel-beam tomography},\nauthor={Vo, Nghia T and Drakopoulos, Michael and Atwood, Robert C and Reinhard, Christina},\njournal={Optics Express},\nvolume={22},\nnumber={16},\npages={19078--19086},\nyear={2014},\npublisher={Optical Society of America}\n}",
+        "description": "The center of rotation for this reconstruction was calculated automatically using the method described in this work",
+        "doi": "http://dx.doi.org/10.1364/OE.22.019078",
+        "endnote": "%0 Journal Article\n%T Reliable method for calculating the center of rotation in parallel-beam tomography\n%A Vo, Nghia T\n%A Drakopoulos, Michael\n%A Atwood, Robert C\n%A Reinhard, Christina\n%J Optics Express\n%V 22\n%N 16\n%P 19078-19086\n%@ 1094-4087\n%D 2014\n%I Optical Society of America"
+      }
+    ],
+    "info": "A plugin to calculate the centre of rotation using the Vo Method.",
+    "name": "VoCentering",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Use for fine searching.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "search_radius",
+        "type": "int",
+        "value": "6"
+      },
+      {
+        "description": "The ratio between the size of object and FOV of the camera.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ratio",
+        "type": "float",
+        "value": "0.5"
+      },
+      {
+        "description": "The default names.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[cor_raw, cor_fit]"
+      },
+      {
+        "description": "A list of datasets which require this information.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "datasets_to_populate",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Search area from horizontal approximate centre of the image.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "search_area",
+        "type": "tuple",
+        "value": "(-50, 50)"
+      },
+      {
+        "description": "Drop lines around vertical center of the mask.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "row_drop",
+        "type": "int",
+        "value": "20"
+      },
+      {
+        "description": "Step of fine searching.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "step",
+        "type": "float",
+        "value": "0.5"
+      },
+      {
+        "description": "The approximate centre. If value is None, take the value from .nxs file else set to image centre.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "start_pixel",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A slice list of required frames (sinograms) to use in the calulation of the centre of rotation (this will not reduce the data size for subsequent plugins).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A plugin to find the center of rotation per frame.",
+    "warn": ""
+  },
+  "VoCenteringIterative": {
+    "citation": [
+      {
+        "bibtex": "@article{vo2014reliable,\ntitle={Reliable method for calculating the center of rotation in parallel-beam tomography},\nauthor={Vo, Nghia T and Drakopoulos, Michael and Atwood, Robert C and Reinhard, Christina},\njournal={Optics Express},\nvolume={22},\nnumber={16},\npages={19078--19086},\nyear={2014},\npublisher={Optical Society of America}\n}",
+        "description": "The center of rotation for this reconstruction was calculated automatically using the method described in this work",
+        "doi": "http://dx.doi.org/10.1364/OE.22.019078",
+        "endnote": "%0 Journal Article\n%T Reliable method for calculating the center of rotation in parallel-beam tomography\n%A Vo, Nghia T\n%A Drakopoulos, Michael\n%A Atwood, Robert C\n%A Reinhard, Christina\n%J Optics Express\n%V 22\n%N 16\n%P 19078-19086\n%@ 1094-4087\n%D 2014\n%I Optical Society of America"
+      }
+    ],
+    "info": "A plugin to calculate the centre of rotation using the Vo Method.",
+    "name": "VoCenteringIterative",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Use for fine searching.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "search_radius",
+        "type": "int",
+        "value": "6"
+      },
+      {
+        "description": "The ratio between the size of object and FOV of the camera.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "ratio",
+        "type": "float",
+        "value": "0.5"
+      },
+      {
+        "description": "The number of pixels to expand the search region by on each iteration.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "expand_by",
+        "type": "int",
+        "value": "5"
+      },
+      {
+        "description": "The default names.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[cor_raw, cor_fit, reliability]"
+      },
+      {
+        "description": "A list of datasets which require this information.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "datasets_to_populate",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Accepted distance of minima from the boundary of the listshift in the coarse search.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "boundary_distance",
+        "type": "int",
+        "value": "3"
+      },
+      {
+        "description": "Drop lines around vertical center of the mask.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "row_drop",
+        "type": "int",
+        "value": "20"
+      },
+      {
+        "description": "Step of fine searching.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "step",
+        "type": "float",
+        "value": "0.5"
+      },
+      {
+        "description": "The approximate centre. If value is None, take the value from .nxs file else set to image centre.",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "start_pixel",
+        "type": "NoneType",
+        "value": "None"
+      },
+      {
+        "description": "A slice list of required frames (sinograms) to use in the calulation of the centre of rotation (this will not reduce the data size for subsequent plugins).",
+        "is_hidden": false,
+        "is_user": true,
+        "name": "preview",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A plugin to find the center of rotation per frame.",
+    "warn": ""
+  },
+  "XrdAbsorptionApproximation": {
+    "citation": [],
+    "info": "McNears absorption correction, takes in a normalised absorption sinogram and xrd sinogram stack.",
+    "name": "XrdAbsorptionApproximation",
+    "parameters": [
+      {
+        "description": "Create a list of the dataset(s) to process.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "the density.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "density",
+        "type": "float",
+        "value": "3.5377"
+      },
+      {
+        "description": "Create a list of the dataset(s) to create.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "angle between detectors.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "azimuthal_offset",
+        "type": "int",
+        "value": "0"
+      },
+      {
+        "description": "the compount.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "compound",
+        "type": "str",
+        "value": "Co0.2(Al2O3)0.8"
+      },
+      {
+        "description": "should we log the transmission.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "log_me",
+        "type": "int",
+        "value": "1"
+      }
+    ],
+    "synopsis": "A plugin apply xrd absorption approximation using stxm data.",
+    "warn": ""
+  },
+  "XrfSaver": {
+    "citation": [],
+    "info": "A class to save xrf data to Diamond Mapping .nxs format. It can also save to edf and rgb for pymca visualisation.",
+    "name": "XrfSaver",
+    "parameters": [
+      {
+        "description": "The name of the dataset to save.",
+        "is_hidden": false,
+        "is_user": false,
+        "name": "in_datasets",
+        "type": "list",
+        "value": "[]"
+      },
+      {
+        "description": "Hidden, dummy out_datasets entry.",
+        "is_hidden": true,
+        "is_user": false,
+        "name": "out_datasets",
+        "type": "list",
+        "value": "[]"
+      }
+    ],
+    "synopsis": "A class to save output in tiff format.",
+    "warn": ""
+  }
+}

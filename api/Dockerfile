@@ -1,15 +1,12 @@
 FROM dannixon/savu:latest
 
 # Install additional Python dependencies
-ADD requirements.txt \
-    /requirements.txt
-RUN /miniconda/bin/pip install -r /requirements.txt && \
-    rm /requirements.txt && /miniconda/bin/pip install pydevd
+ADD requirements.txt /requirements.txt
 
-
-# Clone the latest suitable release for the hebi application
-# TODO create a special branch for IDaaS
-RUN git clone --single-branch --branch master https://github.com/dtasev/hebi /hebi && \
+RUN yum install -y git wget && \
+    /miniconda/bin/pip install -r /requirements.txt && \
+    rm /requirements.txt && /miniconda/bin/pip install pydevd && \
+    git clone --single-branch --branch master https://github.com/dtasev/hebi /hebi && \
     cp -r /hebi/api/webservice /webservice && \
     cp /hebi/api/config/dls.json /hebi_config.json
 
