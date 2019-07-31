@@ -6,7 +6,7 @@ from flask_socketio import SocketIO, join_room, leave_room
 
 import const
 import validation
-from webservice.apps import plugins, run, process_list, jobs
+from webservice.apps import plugins, job, process_list, jobs
 
 
 class BetterJsonEncoder(JSONEncoder):
@@ -20,7 +20,7 @@ socketio = SocketIO(app)
 CORS(app)
 
 plugins.register(app)
-run.register(app)
+job.register(app)
 process_list.register(app)
 jobs.register(app)
 
