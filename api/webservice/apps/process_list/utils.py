@@ -22,22 +22,22 @@ def stringify_parameter_value(value):
     return str(value).replace("'", "")
 
 
-def plugin_to_dict(name, p):
+def plugin_to_dict(name, plugin):
     """
     Returns a dictionary representation of a plugin in a given state.
     """
     parameters = []
-    for param_name in p.parameters.keys():
+    for param_name in plugin.parameters.keys():
         parameters.append({
             'name': param_name,
-            'value': stringify_parameter_value(p.parameters[param_name]),
-            'type': p.parameters_types[param_name].__name__,
-            'description': p.parameters_desc[param_name],
-            'is_user': param_name in p.parameters_user,
-            'is_hidden': param_name in p.parameters_hide,
+            'value': stringify_parameter_value(plugin.parameters[param_name]),
+            'type': plugin.parameters_types[param_name].__name__,
+            'description': plugin.parameters_desc[param_name],
+            'is_user': param_name in plugin.parameters_user,
+            'is_hidden': param_name in plugin.parameters_hide,
         })
 
-    cite = p.get_citation_information()
+    cite = plugin.get_citation_information()
     # We want a list, even if it just a single or no citation
     if not cite:
         cite = []
@@ -46,9 +46,10 @@ def plugin_to_dict(name, p):
 
     return {
         'name': name,
-        'info': p.docstring_info.get('info'),
-        'synopsis': p.docstring_info.get('synopsis'),
-        'warn': p.docstring_info.get('warn'),
+        'info': plugin.docstring_info.get('info'),
+        'synopsis': plugin.docstring_info.get('synopsis'),
+        'warn': plugin.docstring_info.get('warn'),
+        'id': plugin.__module__,
         'citation': [citation_information_to_dict(c) for c in cite],
         'parameters': parameters,
     }

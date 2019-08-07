@@ -15,8 +15,8 @@ _plugin_full = {
     Required('info'): any_string,
     Required('synopsis'): any_string,
     Required('warn'): any_string,
-    Required('citation'): [citation],
     Required('id'): any_non_empty_string,
+    Required('citation'): [citation],
     Required('parameters'): [parameter_full],
 }
 

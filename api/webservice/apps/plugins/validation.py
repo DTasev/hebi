@@ -7,6 +7,7 @@ get_plugin_info_schema = Schema({
     Required('info'): any_string,
     Required('synopsis'): any_string,
     Required('warn'): any_string,
+    Required('id'): any_non_empty_string,
     Required('citation'): [citation],
     Required('parameters'): [parameter_full],
 })
