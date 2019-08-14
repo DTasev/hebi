@@ -5,7 +5,7 @@ from flask import request, jsonify
 from webservice.apps.job import urls
 from webservice.apps.job.postparams import PROCESS_LIST_FILE, PROCESS_LIST_NAME, DATA_DIR
 from webservice.apps.job.validation import job_run_schema
-from webservice.execution.local_process import LocalProcessJob
+from webservice.execution.async_task import TalkativeSAVUProcess
 
 jobs = {}
 
@@ -13,9 +13,6 @@ jobs = {}
 def register(app):
     @app.route("{}/{}".format(urls.JOB_NAMESPACE, urls.RUN), methods=["POST"])
     def run_plugin():
-        import pydevd
-        pydevd.settrace('localhost', port=6969, stdoutToServer=True, stderrToServer=True)
-
         # TODO make this better, using voluptuous or flask-inputs
 
         if PROCESS_LIST_FILE in request.files and PROCESS_LIST_NAME in request.form and DATA_DIR in request.form:
@@ -41,12 +38,15 @@ def register(app):
         if os.path.isfile(filepath):
             try:
                 out_dir = "/output"
-                job = LocalProcessJob(request.form[DATA_DIR], filepath, out_dir)
-                jobs[job.id()] = job
+                # TODO make this not 5
+                job = TalkativeSAVUProcess(request.form[DATA_DIR], filepath, out_dir)
+                jobs[job.id] = job
+                job.start()
                 message += "Process started."
-                response_data = {"job_id": job.id(), "message": message, "output_dir": out_dir}
+                response_data = {"job_id": job.id, "message": message, "output_dir": out_dir}
             except Exception as e:
-                message += "Process not saved due to error: {}".format(e)
+                message += "Process not started due to error: {}".format(e)
+                status = 500
                 response_data = {"message": message}
         return response_data, status
 

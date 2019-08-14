@@ -1,6 +1,7 @@
 import glob
 import os
 import subprocess
+import threading
 
 from savu.tomo_recon import __get_folder_name as get_folder_name
 
@@ -25,7 +26,7 @@ class LocalProcessJob(Job):
             output_path,
             "--folder",
             output_subdir,
-        ])
+        ], stdout=subprocess.PIPE)
 
     def id(self):
         return str(self._process.pid)

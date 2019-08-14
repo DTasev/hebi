@@ -24,7 +24,7 @@ default_cmd = docker run
 default_args = --network=host \
 	    -v ~/dev/hebi/api:/webservice \
 	    -v /mnt/e/:/data:ro \
-	    -v ~/dev/hebi/output:/output:rw  \
+	    -v /mnt/e/savu_output:/output:rw  \
 	    -v ~/dev/savu:/savu_custom:ro  \
 	    -e PUID=$$(id -u) -e PGID=$$(id -g) -it $(OWNER)/$(DOCKERNAME_DEV)
 run:
