@@ -5,39 +5,6 @@ class NoSuchJobError(RuntimeError):
     pass
 
 
-class Job(object):
-    """
-    Stores job state.
-    """
-
-    def to_dict(self):
-        return {
-            "id": self.id(),
-            "running": self.running(),
-            "successful": self.successful(),
-            "status": self.status(),
-            "output_dataset": self.output_dataset(),
-        }
-
-    def id(self):
-        raise NotImplementedError()
-
-    def terminate(self):
-        raise NotImplementedError()
-
-    def running(self):
-        raise NotImplementedError()
-
-    def successful(self):
-        raise NotImplementedError()
-
-    def status(self):
-        raise NotImplementedError()
-
-    def output_dataset(self):
-        raise NotImplementedError()
-
-
 class JobRunner(object):
     """
     Used to start and manage (query status, terminate, etc.) Savu jobs.
@@ -50,9 +17,7 @@ class JobRunner(object):
         pass
 
     def _add_job(self, job):
-        identifier = job.id()
-        self._jobs[identifier] = job
-        return identifier
+        self._jobs[job.id] = job
 
     def job(self, identifier):
         if identifier not in self._jobs:
@@ -60,5 +25,12 @@ class JobRunner(object):
 
         return self._jobs[identifier]
 
-    def start_job(self, data_path, process_list, output_path):
+    def start_job(self, queue, data_path, process_list, output_path):
+        """
+        Starts an asynchronous job
+        :param queue: The queue for which the job is being submitted
+        :param data_path: The path to the data
+        :param process_list: The process list name
+        :param output_path: The output path of the data
+        """
         raise NotImplementedError()

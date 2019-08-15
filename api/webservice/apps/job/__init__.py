@@ -38,7 +38,6 @@ def register(app):
         if os.path.isfile(filepath):
             try:
                 out_dir = "/output"
-                # TODO make this not 5
                 job = TalkativeSAVUProcess(request.form[DATA_DIR], filepath, out_dir)
                 jobs[job.id] = job
                 job.start()

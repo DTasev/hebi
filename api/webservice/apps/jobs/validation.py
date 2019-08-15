@@ -7,8 +7,7 @@ jobs_queue_info_schema = Schema({
     Required('job'): {
         Required('id'): any_non_empty_string,
         Required('running'): bool,
-        Required('successful'): bool,
-        Required('status'): any_non_empty_string,
-        Required('output_dataset'): Any(None, any_non_empty_string),
+        Required('exit_code'): Any(None, int),
+        Required('output'): any_non_empty_string
     },
 })

@@ -8,6 +8,8 @@ CONFIG_KEY_RUNNER_PARAMETERS = 'parameters'
 WS_NAMESPACE_JOB_STATUS = '/job_status'
 
 EVENT_JOB_STATUS = 'status'
+EVENT_JOB_END = 'job_end'
+EVENT_JOB_RADIO = 'radio'
 
 KEY_JOB_ID = 'job'
 KEY_QUEUE_ID = 'queue'
