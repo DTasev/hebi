@@ -24,24 +24,26 @@ def register(app):
         process_list = request.files.get(urlparams.KEY_PROCESS_LIST_FILE)
         process_list_name = request.form.get(urlparams.KEY_PROCESS_LIST_NAME)
         out_dir = "/output"
-        try:
-            process_list = save_process_list_locally(process_list, process_list_name)
-        except Exception as e:
-            return abort(jsonify(message="File not saved due to error: {}\n".format(e)), status.HTTP_404_NOT_FOUND)
 
         # Ensure file is a valid dataset
         if not os.path.isdir(os.path.abspath(dataset)):  # or not validate_file(dataset, is_file_a_data_file):
-            return abort(jsonify(message="Failed to validate data provided as a valid folder path."),
-                         status.HTTP_404_NOT_FOUND)
+            return abort(status.HTTP_400_BAD_REQUEST,
+                         "The dataset path provided, {}, is not a directory.".format(dataset))
+
+        try:
+            process_list_path = save_process_list_locally(process_list, process_list_name)
+        except Exception as e:
+            return abort(status.HTTP_500_INTERNAL_SERVER_ERROR, "Process list not saved due to error: {}".format(e))
+
         # Ensure file is a valid process list
-        if not validate_file(process_list, is_file_a_process_list):
-            return abort(jsonify(message="Failed to validate process list as a valid HDF5 file."),
-                         status.HTTP_404_NOT_FOUND)
+        if not validate_file(process_list_path, is_file_a_process_list):
+            return abort(status.HTTP_400_BAD_REQUEST,
+                         "The process list file provided is not valid.")
 
         # Start job
         job_id = app.config[const.CONFIG_NAMESPACE_SAVU][
             const.CONFIG_KEY_JOB_RUNNERS][queue][
-            const.CONFIG_KEY_RUNNER_INSTANCE].start_job(queue, dataset, process_list, out_dir)
+            const.CONFIG_KEY_RUNNER_INSTANCE].start_job(queue, dataset, process_list_path, out_dir)
 
         return jobs_queue_info(queue, job_id)
 
@@ -55,7 +57,7 @@ def register(app):
         # check that the process started OK
         job = queue[const.CONFIG_KEY_RUNNER_INSTANCE].job(job_id)
         if not job.is_alive() and job.exit_code != 0:
-            abort(jsonify(process_stdout=job.all_output()), status.HTTP_500_INTERNAL_SERVER_ERROR)
+            abort(status.HTTP_500_INTERNAL_SERVER_ERROR, job.all_output())
 
         try:
             data = {
