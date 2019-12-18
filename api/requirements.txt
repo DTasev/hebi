@@ -1,6 +1,6 @@
 drmaa
-flask
-flask_api
+flask==1.0.2
+flask_api==1.0
 flask_cors
 flask-socketio
 fuzzywuzzy
