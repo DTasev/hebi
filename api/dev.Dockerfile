@@ -1,4 +1,4 @@
-FROM dannixon/savu:latest
+FROM dtasev/savu:latest
 
 ARG SAVU_REVISION=master
 
